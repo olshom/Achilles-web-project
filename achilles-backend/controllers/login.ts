@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import express from 'express';
 import User from "../models/user";
+import {Role} from "../models";
 
 const router = express.Router();
 
@@ -13,7 +14,16 @@ const router = express.Router();
 
 
 router.post('/', async (req, res) => {
-    const user = await User.findOne({ where: { username: req.body.username } });
+    const user = await User.findOne({
+        where: { username: req.body.username },
+    include: [            {
+        model: Role,
+        attributes: ['id', 'name'],
+        as: 'roles',
+        through: {
+            attributes: [],
+        }
+    }]});
     if (!user ) {
         throw new Error('User does not exist!');
     }
@@ -27,8 +37,10 @@ router.post('/', async (req, res) => {
     }
     const token = jwt.sign(userForToken, config.SECRET)
 
+    const roles = user.roles?.map((role) => role.name);
+
     res
         .status(200)
-        .send({ token, username: user.username, name: user.firstName })
+        .send({ token, username: user.username, name: user.firstName, roles: roles })
 })
 export default router;

@@ -7,7 +7,8 @@ class Group extends Model<InferAttributes<Group, { omit: 'users' }>, InferCreati
     declare id: CreationOptional<number>;
     declare name: string;
     declare description: string;
-
+    declare createdAt: CreationOptional<Date>;
+    declare updatedAt: CreationOptional<Date>;
     declare users: NonAttribute<User[]>;
 }
 
@@ -22,11 +23,14 @@ Group.init(
             type: new DataTypes.STRING(64),
             allowNull: false
         },
-        description: DataTypes.STRING
+        description: DataTypes.STRING,
+        createdAt: DataTypes.DATE,
+        updatedAt: DataTypes.DATE
     },
     {
         tableName: 'groups',
-        timestamps: false,
+        underscored: true,
+        timestamps: true,
         sequelize
     });
 

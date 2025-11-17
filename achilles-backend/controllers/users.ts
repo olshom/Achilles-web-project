@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', async (_req, res) => {
     const users = await User.findAll({
-        attributes: {exclude: ['planId', 'PlanId', 'GroupId', 'groupId']},
+        attributes: {exclude: ['planId', 'PlanId', 'GroupId', 'groupId', 'password']},
         include: [
             {
                 model: Role,
@@ -38,8 +38,16 @@ router.get('/:id', async (req, res) => {
     const oneWeek = new Date();
     oneWeek.setDate(now.getDate() + 7);
     const user = await User.findByPk(id, {
-        attributes: {exclude: ['planId', 'PlanId', /*'GroupId', 'groupId'*/]},
+        attributes: {exclude: ['planId', 'PlanId', 'GroupId', 'groupId', 'password']},
         include: [
+            {
+                model: Role,
+                attributes: ['id', 'name'],
+                as: 'roles',
+                through: {
+                    attributes: [],
+                }
+            },
             {
                 model: Plan,
                 as: 'plan',
@@ -92,4 +100,66 @@ router.put('/:id/password', async (req, res) => {
     }
 
 })
+
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+    await User.destroy({where: {id: id}})
+    res.status(204).end()
+})
+
+/*router.put('/:id', async (req, res) => {
+    const {id} = req.params;
+    const user = await User.findByPk(id)
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+    const fieldsToUpdate = ['username', 'firstName', 'lastName', 'email', 'belt', 'groupId', 'planId'];
+    const updatedUser = {...user}
+    fieldsToUpdate.forEach(field => {
+        if (req.body[field] !== undefined) {
+            updatedUser[field] = req.body[field];
+        }
+    })
+
+    const newUser = await user.update(updatedUser)
+    await newUser.reload({
+        attributes: {exclude: ['planId', 'PlanId', 'GroupId', 'groupId', 'password']},
+        include: [
+            {
+                model: Role,
+                attributes: ['id', 'name'],
+                as: 'roles',
+                through: {
+                    attributes: [],
+                }
+            },
+            {
+                model: Plan,
+                as: 'plan',
+            },
+            {
+                model: Group,
+                as: 'group',
+                attributes: ['id', 'name'],
+                include: [
+                    {
+                        model: Event,
+                        as: 'events',
+                        /!*                        where: {start: {
+                                                        [Op.between]: [now, oneWeek]
+                                                    }},*!/
+                        through: {
+                            attributes: [],
+                        }
+                    }
+                ]
+            },
+            {
+                model: Achievement,
+                as: 'achievements',
+                attributes: {exclude: ['userId']}
+            }],
+    })
+    res.json(newUser)
+})*/
 export default router;

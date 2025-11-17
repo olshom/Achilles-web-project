@@ -1,4 +1,4 @@
-import {Model, DataTypes} from 'sequelize';
+import {Model, DataTypes, HasManyCreateAssociationMixin} from 'sequelize';
 import {sequelize} from '../util/db';
 import {
     InferAttributes,
@@ -6,7 +6,7 @@ import {
     CreationOptional,
     ForeignKey,
     NonAttribute,
-    HasManyAddAssociationMixin
+
 } from 'sequelize';
 import Group from "./group";
 import Plan from "./plan";
@@ -29,7 +29,8 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare profilePic: CreationOptional<string>;
     declare roles?: NonAttribute<Role[]>;
     declare achievements?: NonAttribute<Achievement[]>;
-    declare addAchievement: HasManyAddAssociationMixin<Achievement, number>;
+//    declare addAchievement: HasManyAddAssociationMixin<Achievement, number>;
+    declare createAchievement: HasManyCreateAssociationMixin<Achievement, 'userId'>;
 }
 
 User.init({

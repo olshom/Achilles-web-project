@@ -1,0 +1,62 @@
+import { TextField, Button } from '@mui/material';
+import {Link, useNavigate} from 'react-router-dom';
+import {useState} from "react";
+import {useDispatch} from "react-redux";
+import {loginAction, setUser} from "../reducers/userReducer.js";
+
+const Login = () => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate()
+
+    const handleLogin = async (event) => {
+        event.preventDefault();
+        try {
+            await dispatch(loginAction(username, password));
+            console.log(username);
+            setUsername('');
+            setPassword('');
+            navigate('/users')
+        } catch (error) {
+//            dispatch(setErrorNotificationWTimer(`${error.response.data.error}`, 5));
+            setUsername('');
+            setPassword('');
+        }
+    };
+
+
+return (
+            <div>
+                <h2>log in</h2>
+
+            <form onSubmit={handleLogin}>
+                <div>
+                    <TextField
+                        label="username"
+                        type="text"
+                        value={username}
+                        onChange={({ target }) => setUsername(target.value)}
+                    />
+                </div>
+                <div>
+                    <TextField
+                        label="password"
+                        type='password'
+                        value={password}
+                        onChange={({ target }) => setPassword(target.value)}
+                    />
+                </div>
+                <div>
+                    <Button variant="contained" color="primary" type="submit">
+                        log in
+                    </Button>
+                    <Link  to="/signup" >sign up</Link>
+                </div>
+            </form>
+        </div>
+    )
+}
+
+export default Login

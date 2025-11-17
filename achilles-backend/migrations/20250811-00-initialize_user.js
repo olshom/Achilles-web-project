@@ -16,7 +16,13 @@ module.exports = {
                 type: DataTypes.INTEGER,
                 allowNull: false
             },
-            description: DataTypes.STRING
+            description: DataTypes.STRING,
+            created_at: {
+                type: DataTypes.DATE,
+            },
+            updated_at: {
+                type: DataTypes.DATE,
+            }
         })
         await queryInterface.createTable('roles', {
             id: {
@@ -27,6 +33,12 @@ module.exports = {
             name: {
                 type: DataTypes.STRING,
                 allowNull: false
+            },
+            created_at: {
+                type: DataTypes.DATE,
+            },
+            updated_at: {
+                type: DataTypes.DATE,
             }
         })
         await queryInterface.createTable('groups', {
@@ -42,6 +54,12 @@ module.exports = {
             description: {
                 type: DataTypes.STRING,
                 allowNull: true
+            },
+            created_at: {
+                type: DataTypes.DATE,
+            },
+            updated_at: {
+                type: DataTypes.DATE,
             }
         })
         await queryInterface.createTable('users', {
@@ -133,6 +151,12 @@ module.exports = {
                 type: DataTypes.STRING,
                 allowNull: true,
             },
+            created_at: {
+                type: DataTypes.DATE,
+            },
+            updated_at: {
+                type: DataTypes.DATE,
+            }
         })
         await queryInterface.createTable('events', {
             id: {

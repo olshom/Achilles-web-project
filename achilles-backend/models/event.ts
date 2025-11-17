@@ -1,5 +1,13 @@
-import {Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional} from 'sequelize';
+import {
+    Model,
+    DataTypes,
+    InferAttributes,
+    InferCreationAttributes,
+    CreationOptional,
+    HasManyAddAssociationsMixin
+} from 'sequelize';
 import { sequelize } from '../util/db';
+import Group from "./group";
 
 class Event extends Model<InferAttributes<Event>, InferCreationAttributes<Event>> {
     declare id: CreationOptional<number>;
@@ -10,6 +18,7 @@ class Event extends Model<InferAttributes<Event>, InferCreationAttributes<Event>
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
     declare description: CreationOptional<string>;
+    declare addGroups: HasManyAddAssociationsMixin<Group, number>
 }
 
 Event.init({

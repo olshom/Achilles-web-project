@@ -8,8 +8,8 @@ class Plan extends Model<InferAttributes<Plan, { omit: 'users' }>, InferCreation
     declare type: string;
     declare price: number;
     declare description: string | null;
-    // declare createdAt: CreationOptional<Date>;
-    // declare updatedAt: CreationOptional<Date>;
+    declare createdAt: CreationOptional<Date>;
+    declare updatedAt: CreationOptional<Date>;
 
     declare users?: NonAttribute<User[]>
 }
@@ -30,13 +30,14 @@ Plan.init(
             allowNull: false
           },
         description: DataTypes.STRING,
-        // createdAt: DataTypes.DATE,
-        // updatedAt: DataTypes.DATE,
+        createdAt: DataTypes.DATE,
+        updatedAt: DataTypes.DATE,
     },
     {
         tableName: 'plans',
         sequelize,
-        timestamps: false,
+        underscored: true,
+        timestamps: true,
     });
 
 export default Plan;

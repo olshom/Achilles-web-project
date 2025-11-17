@@ -13,8 +13,9 @@ Group.hasMany(User, { as: 'users'});
 User.belongsTo(Group, {as: 'group'});
 Plan.hasMany(User, {as: 'users'});
 User.belongsTo(Plan, {as: 'plan'});
-User.hasMany(Achievement, { as: 'achievements' });
-Achievement.belongsTo(User, {as: 'user'});
+User.hasMany(Achievement, {    sourceKey: 'id',
+    foreignKey: 'userId', as: 'achievements' });
+Achievement.belongsTo(User, {foreignKey: 'userId', as: 'user'});
 User.belongsToMany(Role, {through: 'user_roles', as: 'roles'});
 Role.belongsToMany(User, {through: 'user_roles', as: 'users'});
 

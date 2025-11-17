@@ -16,7 +16,9 @@ class Achievement extends Model<InferAttributes<Achievement>, InferCreationAttri
     declare user?: NonAttribute<User>;
     declare date: string;
     declare type: string;
-    declare description: string;
+    declare description: CreationOptional<string>;
+    declare createdAt: CreationOptional<Date>;
+    declare updatedAt: CreationOptional<Date>;
 
 }
 
@@ -36,12 +38,15 @@ Achievement.init({
     },
     description: {
         type: DataTypes.STRING,
-    }
+    },
+    createdAt: DataTypes.DATE,
+    updatedAt: DataTypes.DATE
 
-}, {sequelize,
-    underscored: true,
+}, {
+    sequelize,
     modelName: "achievement",
-    timestamps: false
+    underscored: true,
+    timestamps: true,
 });
 
 export default Achievement;

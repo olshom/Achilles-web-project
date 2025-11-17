@@ -7,6 +7,8 @@ class Role extends Model<InferAttributes<Role>, InferCreationAttributes<Role>> {
     declare id: CreationOptional<number>;
     declare name: string;
     declare users?: NonAttribute<User[]>;
+    declare createdAt: CreationOptional<Date>;
+    declare updatedAt: CreationOptional<Date>;
 }
 
 Role.init(
@@ -19,12 +21,15 @@ Role.init(
         name: {
             type: new DataTypes.STRING(64),
             allowNull: false
-        }
+        },
+        createdAt: DataTypes.DATE,
+        updatedAt: DataTypes.DATE
     },
     {
         tableName: 'roles',
         sequelize,
-        timestamps: false,
+        underscored: true,
+        timestamps: true,
     });
 
 export default Role;
