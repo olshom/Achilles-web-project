@@ -9,8 +9,7 @@ router.get('/', async (_req, res) => {
 })
 
 router.post('/', async (req, res) => {
-    const {type, price, description} = req.body;
-    const newPlan = await Plan.create({type, price, description})
+    const newPlan = await Plan.create(req.body)
     res.json(newPlan)
 })
 
@@ -34,3 +33,5 @@ router.delete('/:id', async (req, res) => {
     await Plan.destroy({where: {id}})
     res.status(204).end()
 })
+
+export default router;

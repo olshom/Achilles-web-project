@@ -27,9 +27,9 @@ const Login = () => {
     };
 
 
-return (
-            <div>
-                <h2>log in</h2>
+    return (
+        <div>
+            <h2>log in</h2>
 
             <form onSubmit={handleLogin}>
                 <div>
@@ -37,7 +37,7 @@ return (
                         label="username"
                         type="text"
                         value={username}
-                        onChange={({ target }) => setUsername(target.value)}
+                        onChange={({target}) => setUsername(target.value)}
                     />
                 </div>
                 <div>
@@ -45,14 +45,14 @@ return (
                         label="password"
                         type='password'
                         value={password}
-                        onChange={({ target }) => setPassword(target.value)}
+                        onChange={({target}) => setPassword(target.value)}
                     />
                 </div>
                 <div>
                     <Button variant="contained" color="primary" type="submit">
                         log in
                     </Button>
-                    <Link  to="/signup" >sign up</Link>
+                    <Link to="/signup">sign up</Link>
                 </div>
             </form>
         </div>

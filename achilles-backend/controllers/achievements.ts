@@ -11,7 +11,10 @@ router.get('/', async (_req, res) => {
         include: [
             {
                 model: User,
-                as: 'user'
+                as: 'user',
+                attributes: {
+                    exclude: ['password'],
+                }
             }
         ]
     });
@@ -31,7 +34,10 @@ router.post('/', async (req, res) => {
             include: [
                 {
                     model: User,
-                    as: 'user'
+                    as: 'user',
+                    attributes: {
+                        exclude: ['password'],
+                    }
                 }
             ]})
         res.json(achievement);
@@ -48,7 +54,10 @@ router.get('/:id', async (req, res) => {
         include: [
             {
                 model: User,
-                as: 'user'
+                as: 'user',
+                attributes: {
+                    exclude: ['password'],
+                }
             }
         ]
     })
@@ -63,6 +72,32 @@ router.delete('/:id', async (req, res) => {
     const {id} = req.params;
     await Achievement.destroy({where: {id}})
     res.status(204).end()
+})
+
+router.put('/:id', async (req, res) => {
+    const {id} = req.params;
+    const achievement = await Achievement.findByPk(id)
+    if (!achievement) {
+        res.status(404).json({})
+    }else {
+        Object.assign(achievement, req.body as Partial<Achievement>)
+        await achievement.save()
+        const updated = await Achievement.findByPk(id, {
+            attributes: {
+                exclude: ['userId'],
+            },
+            include: [
+                {
+                    model: User,
+                    as: 'user',
+                    attributes: {
+                        exclude: ['password'],
+                    }
+                }
+            ]
+        })
+        res.json(updated);
+    }
 })
 
 export default router;

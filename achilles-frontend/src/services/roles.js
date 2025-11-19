@@ -2,19 +2,23 @@ import axios from "axios";
 const baseURL = "http://localhost:3003/api/roles/";
 
 const getAllRoles = async () => {
-    return await axios.get(baseURL);
+    const response = await axios.get(baseURL);
+    return response.data;
 }
 
 const deleteRole = async (id) => {
-    return await axios.delete(`${baseURL}/${id}`);
+    const response = await axios.delete(`${baseURL}/${id}`);
+    return response.data;
 }
 
 const addRole = async (role) => {
-    return await axios.post(baseURL, role);
+    const response = await axios.post(baseURL, role);
+    return response.data;
 }
 
 const updateRole = async (id, role) => {
-    return await axios.put(`${baseURL}/${id}`, role);
+    const response = await axios.put(`${baseURL}/${id}`, role);
+    return response.data;
 }
 
 export default {getAllRoles, addRole, deleteRole, updateRole};

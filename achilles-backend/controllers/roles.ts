@@ -9,8 +9,7 @@ router.get('/', async (_req, res) => {
 })
 
 router.post('/', async (req, res) => {
-    const { name } = req.body;
-    const role = await Role.create({name})
+    const role = await Role.create(req.body);
     res.json(role);
 })
 

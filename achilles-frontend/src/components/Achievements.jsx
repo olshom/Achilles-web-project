@@ -48,7 +48,7 @@ const Achievements = () => {
 
     const handleNewAchievement = async(event) => {
         event.preventDefault();
-        await dispatch(addAchievementAction({date, type, description, userId: selectedUser.id}));
+        await dispatch(addAchievementAction({date: date.format('YYYY-MM-DD'), type, description, userId: selectedUser.id}));
         setType('');
         setDescription('');
         setSelectedUser(null);

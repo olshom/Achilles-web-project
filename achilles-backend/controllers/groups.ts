@@ -9,8 +9,7 @@ router.get('/', async (_req, res) => {
 })
 
 router.post('/', async (req, res) => {
-    const { name, description } = req.body;
-    const newGroup = await Group.create({name, description})
+    const newGroup = await Group.create(req.body)
     res.json(newGroup)
 })
 

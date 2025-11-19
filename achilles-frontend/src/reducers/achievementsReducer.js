@@ -14,8 +14,8 @@ const achievementsSlice = createSlice({
 //            state.sort((a, b) => a.date - b.date);
         },
         deleteAchievement: (state, action) => {
-            const achievementToDelete = action.payload;
-            return state.filter(achievement => achievement.id !== achievementToDelete.id);
+            const achievementToDeleteId = action.payload;
+            return state.filter(achievement => achievement.id !== achievementToDeleteId);
         },
         updateAchievement: (state, action) => {
             const achievementToUpdate = action.payload;
@@ -41,10 +41,10 @@ export const addAchievementAction = (achievement) => {
     }
 }
 
-export const deleteAchievementAction = (achievement) => {
+export const deleteAchievementAction = (id) => {
     return async (dispatch) => {
-        await achievementsService.deleteAchievement(achievement.id);
-        dispatch(deleteAchievement(achievement));
+        await achievementsService.deleteAchievement(id);
+        dispatch(deleteAchievement(id));
     }
 }
 

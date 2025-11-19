@@ -1,4 +1,4 @@
-import {Link, useParams} from 'react-router-dom'
+import {Link, useParams, useNavigate} from 'react-router-dom'
 import usersService from "../services/users.js";
 import {useEffect, useState} from "react";
 import {
@@ -9,54 +9,82 @@ import {
     TableContainer,
     TableRow,
     Paper, Button,
+    FormControl,
+    Select,
+    MenuItem,
+    InputLabel
 } from '@mui/material'
+import {initializeGroups} from "../reducers/groupsReducer.js";
+import {useDispatch, useSelector} from "react-redux";
+import {initializePlans} from "../reducers/plansReducer.js";
+import {initializeRoles} from "../reducers/rolesReducer.js";
+import { updateUser, deleteUser, deleteUserAction} from "../reducers/usersReducer.js";
 
-const User = ({initUser}) => {
+const User = () => {
     const id = useParams().id
     console.log(id)
-    const [user, setUser] = useState(initUser)
-    const [editEnabled, seTEditEnabled] = useState(false);
+    const [userForView, setUserForView] = useState(null)
+    const [editEnabled, setEditEnabled] = useState(false);
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [belt, setBelt] = useState('');
-    const [plan, setPlan] = useState('');
-    const [plans, setPlans] = useState([]);
-    const [roles, setRoles] = useState([]);
+    const [planId, setPlanId] = useState(null);
     const [userRoles, setUserRoles] = useState([]);
-    const [groups, setGroups] = useState([]);
-    const [group, setGroup] = useState({});
+    const [groupId, setGroupId] = useState(null);
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const groups = useSelector((state) => state.groups);
+    const plans = useSelector((state) => state.plans);
+    const roles = useSelector((state) => state.roles);
+
     const fetchUser = async () => {
         try {
-            console.log("Fetching user...")
             const user = await usersService.getUserById(id);
-            console.log(user)
-            setUser(user);
+            setUserForView(user);
             setUsername(user.username);
+            setFirstName(user.firstName);
+            setLastName(user.lastName);
+            setGroupId(user.group?.id ?? '');
+            setBelt(user.belt ?? '');
+            setUserRoles(user.roles?.map(role => role.id));
+            setPlanId(user.plan?.id ?? '');
+            console.log('first', userRoles);
         } catch (error) {
             console.log(error);
         }
     }
 
     useEffect( () => {
-        console.log('useEffect - initialUser:', initUser, 'id:', id);
-        if(!user) {
+        if(!userForView) {
             void fetchUser()
         }
     }, [])
 
     useEffect(() => {
         if (editEnabled) {
-            setGroups([])
-            setRoles([])
-            setPlans()
+            dispatch(initializeGroups())
+            dispatch(initializePlans())
+            dispatch(initializeRoles())
         }
+
     }, [editEnabled]);
 
-    console.log(user);
+    const handleDeleteUser = async (id) => {
+        try {
+            if (window.confirm("Are you sure you want to delete this user?")) {
+                await dispatch(deleteUserAction(id));
+                navigate('/users')
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
-    if (!user) {
+    if (!userForView) {
         return "Loading...";
     }
 
@@ -77,7 +105,7 @@ const User = ({initUser}) => {
                                 type="text"
                                 value={username}
                                 onChange={({ target }) => setUsername(target.value)}
-                                /> : <div>{user.username}</div>}
+                                /> : <div>{userForView.username}</div>}
                         </TableCell>
                     </TableRow>
                     <TableRow>
@@ -89,7 +117,7 @@ const User = ({initUser}) => {
                             type="text"
                             value={firstName}
                             onChange={({target}) => setFirstName(target.value)}
-                            /> : <div>{user.firstName}</div>}
+                            /> : <div>{userForView.firstName}</div>}
                         </TableCell>
                     </TableRow>
                     <TableRow>
@@ -101,7 +129,7 @@ const User = ({initUser}) => {
                                 type="text"
                                 value={lastName}
                                 onChange={({target}) => setLastName(target.value)}
-                            /> : <div>{user.lastName}</div>}
+                            /> : <div>{userForView.lastName}</div>}
                         </TableCell>
                     </TableRow>
                     <TableRow>
@@ -109,7 +137,7 @@ const User = ({initUser}) => {
                             Email
                         </TableCell>
                         <TableCell>
-                            {user.username}
+                            {userForView.username}
                         </TableCell>
                     </TableRow>
                     <TableRow>
@@ -117,12 +145,13 @@ const User = ({initUser}) => {
                             Group
                         </TableCell>
                         <TableCell>
+                            {editEnabled ?
                             <FormControl>
                                 <InputLabel></InputLabel>
                                 <Select
                                     name="groupId"
                                     value={groupId}
-                                    onChange={handleChange}
+                                    onChange={(e) => setGroupId(e.target.value)}
                                 >
                                     {groups.map(group => (
                                         <MenuItem key={group.id} value={group.id}>
@@ -130,8 +159,7 @@ const User = ({initUser}) => {
                                         </MenuItem>
                                     ))}
                                 </Select>
-                            </FormControl>
-                            {user.group}
+                            </FormControl> : <div>{userForView.group ? userForView.group.name:null}</div>}
                         </TableCell>
                     </TableRow>
                     <TableRow>
@@ -139,7 +167,13 @@ const User = ({initUser}) => {
                             Belt
                         </TableCell>
                         <TableCell>
-                            {user.belt}
+                            {editEnabled?
+                                <TextField
+                                    type="text"
+                                    value={belt}
+                                    onChange={({target}) => setBelt(target.value)}
+                                    /> :
+                                <div>{userForView.belt || ''}</div>}
                         </TableCell>
                     </TableRow>
                     <TableRow>
@@ -147,7 +181,27 @@ const User = ({initUser}) => {
                             Roles:
                         </TableCell>
                         <TableCell>
-                            {user.roles?.map(role => role.name).join(', ') || 'No roles'}
+                            {editEnabled?
+                                <FormControl>
+                                    <InputLabel></InputLabel>
+                                    <Select
+                                        multiple
+                                        value={userRoles}
+                                        onChange={(e) => {
+
+                                            console.log('e.target.value  ', e.target.value)
+                                            setUserRoles(e.target.value)
+                                            console.log('userRoles  ',userRoles)
+                                        }}
+                                    >
+                                        {roles.map(role => (
+                                            <MenuItem key={role.id} value={role.id}>
+                                                {role.name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                :<div>{userForView.roles?.map(role => role.name).join(', ') || 'No roles'}</div>}
                         </TableCell>
                     </TableRow>
                     <TableRow>
@@ -155,22 +209,50 @@ const User = ({initUser}) => {
                             Plan
                         </TableCell>
                         <TableCell>
-                            {user.plan.type}
+                            {editEnabled ?
+                                <FormControl>
+                                    <InputLabel></InputLabel>
+                                    <Select
+                                    name="planId"
+                                    value={planId}
+                                    onChange={(e) => setPlanId(e.target.value)}>
+                                        {plans.map(plan => (
+                                            <MenuItem key={plan.id} value={plan.id}>
+                                                {plan.type}
+                                            </MenuItem>
+                                            ))}
+                                    </Select>
+                                </FormControl>
+                                :<div>{userForView.plan ? userForView.plan.type : null}</div>}
                         </TableCell>
                     </TableRow>
                     {/* First row for achievements label */}
-                    {user.achievements && user.achievements.length > 0 && (
+                    {userForView.achievements && userForView.achievements.length > 0 && (
                         <TableRow>
                             <TableCell sx={{ fontWeight: 'bold', bgcolor: '#f5f5f5' }}>Achievements</TableCell>
-                            <TableCell>{user.achievements[0].type}</TableCell>
+                            <TableCell>
+                                {userForView.achievements[0].type}
+                                <Button
+                                    color="inherit"
+                                    variant="contained"
+                                    component={Link} to={`/achievements/${userForView.achievements[0].id}`}
+                                >show more</Button>
+                            </TableCell>
                         </TableRow>
                     )}
 
                     {/* Additional rows for remaining achievements */}
-                    {user.achievements?.slice(1).map((achievement, index) => (
+                    {userForView.achievements?.slice(1).map((achievement, index) => (
                         <TableRow key={achievement.id || index}>
                             <TableCell></TableCell>
-                            <TableCell>{achievement.type}</TableCell>
+                            <TableCell>
+                                {achievement.type}
+                                <Button
+                                    color="inherit"
+                                    variant="contained"
+                                    component={Link} to={`/achievements/${achievement.id}`}
+                                >show more</Button>
+                            </TableCell>
                         </TableRow>
                     ))}
                 <TableRow>
@@ -178,19 +260,43 @@ const User = ({initUser}) => {
                         <Button
                             color="primary"
                             variant="contained"
-                            onClick={() => seTEditEnabled(!editEnabled)}
+                            onClick={async () => {
+                                if (editEnabled) {
+                                    const updatedUser = {
+                                        username: username,
+                                        firstName: firstName,
+                                        lastName: lastName,
+                                        belt: belt,
+                                        planId: planId,
+                                        roles: userRoles,
+                                        groupId: groupId
+                                    }
+                                    const updUser = await usersService.updateUser(id, updatedUser);
+                                    dispatch(updateUser(updUser));
+                                    setUserForView(updUser);
+                                    setEditEnabled(false)
+                                } else {
+                                    setEditEnabled(true)
+                                }
+                            }}
                         >
                             Update user info
                         </Button>
-                    </TableCell>
-                    <TableCell>
-                        <Button
+
+                        {editEnabled&&<div><Button variant="outlined" color="secondary" onClick={() => setEditEnabled(false)}>
+                            cancel
+                        </Button>
+                            <Button
                             color="primary"
                             variant="contained"
-                            onClick={() => {deleteUser}}
+                            onClick={() => {
+                                handleDeleteUser(userForView.id);
+                            }}
                         >
                             Delete user
                         </Button>
+                        </div>
+                        }
                     </TableCell>
                 </TableRow>
                 </TableBody>

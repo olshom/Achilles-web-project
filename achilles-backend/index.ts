@@ -8,6 +8,8 @@ import eventRouter from "./controllers/events";
 import signupRouter from "./controllers/signup";
 import achievementsRouter from "./controllers/achievements";
 import rolesRouter from "./controllers/roles";
+import groupsRouter from "./controllers/groups";
+import plansRouter from "./controllers/plans";
 
 const PORT = process.env.PORT || 3003;
 
@@ -19,8 +21,10 @@ app.use('/api/users', userRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/events', eventRouter);
 app.use('/api/signup', signupRouter);
-app.use('/api/achievements', achievementsRouter)
-app.use('/api/roles', rolesRouter)
+app.use('/api/achievements', achievementsRouter);
+app.use('/api/roles', rolesRouter);
+app.use('/api/groups', groupsRouter);
+app.use('/api/plans', plansRouter);
 
 const start = async () => {
     await connectToDatabase()

@@ -14,7 +14,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Achievement from "./components/Achievement.jsx";
 
-
 function App() {
     const user = useSelector(({ user }) => user);
     const users = useSelector(({ users }) => users);

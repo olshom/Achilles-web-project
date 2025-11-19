@@ -1,7 +1,6 @@
 import express from 'express';
-import {User, Achievement, Role, Plan, Group, Event } from "../models";
+import {User, Achievement, Role, Plan, Group } from "../models";
 import bcrypt from 'bcrypt';
-//import {Op} from "sequelize";
 
 const router = express.Router();
 
@@ -55,20 +54,7 @@ router.get('/:id', async (req, res) => {
             {
                 model: Group,
                 as: 'group',
-                attributes: ['id', 'name'],
-                include: [
-                    {
-                        model: Event,
-                        as: 'events',
-/*                        where: {start: {
-                                [Op.between]: [now, oneWeek]
-                            }},*/
-                        through: {
-                            attributes: [],
-                        }
-                    }
-
-                ]
+                attributes: ['id', 'name']
             },
             {
                 model: Achievement,
@@ -82,6 +68,46 @@ router.get('/:id', async (req, res) => {
         res.status(404).json({error: 'User not found'})
     }
     res.json(user)
+})
+
+router.put('/:id', async (req, res) => {
+    const {id} = req.params;
+    const user = await User.findByPk(id)
+    if (!user) {
+        res.status(404).json({error: 'User not found'})
+    } else {
+        const {roles, ...fieldsForUpdate} = req.body;
+        Object.assign(user, fieldsForUpdate as Partial<User>)
+        await user.setRoles(roles);
+        await user.save();
+        const updatedUser = await User.findByPk(id, {
+            attributes: {exclude: ['planId', 'PlanId', 'GroupId', 'groupId', 'password']},
+            include: [
+                {
+                    model: Role,
+                    attributes: ['id', 'name'],
+                    as: 'roles',
+                    through: {
+                        attributes: [],
+                    }
+                },
+                {
+                    model: Plan,
+                    as: 'plan',
+                },
+                {
+                    model: Group,
+                    as: 'group',
+                    attributes: ['id', 'name']
+                },
+                {
+                    model: Achievement,
+                    as: 'achievements',
+                    attributes: {exclude: ['userId']}
+                }],
+        })
+        res.json(updatedUser)
+    }
 })
 
 router.put('/:id/password', async (req, res) => {
@@ -103,63 +129,17 @@ router.put('/:id/password', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
-    await User.destroy({where: {id: id}})
-    res.status(204).end()
-})
-
-/*router.put('/:id', async (req, res) => {
-    const {id} = req.params;
     const user = await User.findByPk(id)
     if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        res.status(404).json({error: 'User not found'})
+    } else {
+        await Achievement.destroy({
+            where: { userId: id }
+        });
+        await user.setRoles([]);
+        await user.destroy()
+        res.status(204).end()
     }
-    const fieldsToUpdate = ['username', 'firstName', 'lastName', 'email', 'belt', 'groupId', 'planId'];
-    const updatedUser = {...user}
-    fieldsToUpdate.forEach(field => {
-        if (req.body[field] !== undefined) {
-            updatedUser[field] = req.body[field];
-        }
-    })
+})
 
-    const newUser = await user.update(updatedUser)
-    await newUser.reload({
-        attributes: {exclude: ['planId', 'PlanId', 'GroupId', 'groupId', 'password']},
-        include: [
-            {
-                model: Role,
-                attributes: ['id', 'name'],
-                as: 'roles',
-                through: {
-                    attributes: [],
-                }
-            },
-            {
-                model: Plan,
-                as: 'plan',
-            },
-            {
-                model: Group,
-                as: 'group',
-                attributes: ['id', 'name'],
-                include: [
-                    {
-                        model: Event,
-                        as: 'events',
-                        /!*                        where: {start: {
-                                                        [Op.between]: [now, oneWeek]
-                                                    }},*!/
-                        through: {
-                            attributes: [],
-                        }
-                    }
-                ]
-            },
-            {
-                model: Achievement,
-                as: 'achievements',
-                attributes: {exclude: ['userId']}
-            }],
-    })
-    res.json(newUser)
-})*/
 export default router;
