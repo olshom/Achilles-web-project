@@ -25,6 +25,7 @@ function App() {
 
 
     useEffect(() => {
+        console.log('App effect running');
         const loggedUserJSON = window.localStorage.getItem('loggedUser');
         if (loggedUserJSON) {
             const user = JSON.parse(loggedUserJSON);
@@ -47,55 +48,57 @@ function App() {
     }
 
 //    <Route path="/" element={{user === null ? (<Login />):(<Users />)}} />
-  return (
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <>
-          { user !== null && (
-              <AppBar position="static">
-                  <Toolbar>
-                      <Button color="inherit" component={Link} to="/events">
-                          Events
-                      </Button>
-                      <Button color="inherit" component={Link} to="/achievements">
-                          Achievements
-                      </Button>
-                      <Button color="inherit" component={Link} to="/users">
-                          Members
-                      </Button>
-                      <Button color="inherit" component={Link} to="/coaches">
-                          Coaches
-                      </Button>
-                      <h3>{user.name} logged-in</h3>
-                      <Button color="inherit" onClick={handleLogout}>
-                          logout
-                      </Button>
+    return (
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <>
+                <AppBar position="static">
+                    <Toolbar>
+                        <Button color="inherit" component={Link} to="/events">
+                            Events
+                        </Button>
+                        <Button color="inherit" component={Link} to="/achievements">
+                            Achievements
+                        </Button>
+                        <Button color="inherit" component={Link} to="/users">
+                            Members
+                        </Button>
+                        <Button color="inherit" component={Link} to="/coaches">
+                            Coaches
+                        </Button>
+                        {user && <h3>{user.name} logged-in</h3>}
+                        {user && <div style={{display: 'flex', gap: '1rem', marginLeft: 'auto'}}>
+                            <Button color="inherit" onClick={handleLogout}>
+                            logout
+                        </Button></div>}
+                        {!user && <div style={{display: 'flex', gap: '1rem', marginLeft: 'auto'}}>
+                            <Button color="inherit" component={Link} to="/login">
+                                login
+                            </Button>
+                            <Button color="inherit" component={Link} to="/signup">
+                                signup
+                            </Button>
+                        </div>}
 
-                  </Toolbar>
-              </AppBar>
-          )}
-            <Container sx={{ marginTop: 2 }}>
-                {user === null ? (
-                    <div style={{ display: 'flex', gap: '1rem' }}>
-                        <Button variant="contained" component={Link} to="/login">
-                            Log in
-                        </Button>
-                        <Button variant="contained" component={Link} to="/signup">
-                            Sign up
-                        </Button>
-                    </div>
-                ) : null}
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/signup" element={<Signup />} />
-                    <Route path="/users" element={<Users />} />
-                    <Route path="/users/:id" element={<User user={userOfClub} />} />
-                    <Route path="/achievements" element={<Achievements />} />
-                    <Route path="/achievements/:id" element={<Achievement achievementId={achievementId} />} />
-                </Routes>
-            </Container>
-        </>
-      </LocalizationProvider>
-  )
+                    </Toolbar>
+                </AppBar>
+                <Container sx={{marginTop: 2}}>
+
+                    <Routes>
+
+                        <Route path="/login" element={<Login/>}/>
+{/*
+                        <Route path="/events" element={<Events />}/>
+*/}
+                        <Route path="/signup" element={<Signup/>}/>
+                        <Route path="/users" element={<Users/>}/>
+                        <Route path="/users/:id" element={<User user={userOfClub}/>}/>
+                        <Route path="/achievements" element={<Achievements/>}/>
+                        <Route path="/achievements/:id" element={<Achievement achievementId={achievementId}/>}/>
+                    </Routes>
+                </Container>
+            </>
+        </LocalizationProvider>
+    )
 }
 
 export default App

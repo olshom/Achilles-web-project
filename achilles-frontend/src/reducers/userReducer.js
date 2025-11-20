@@ -25,6 +25,7 @@ export const loginAction = (username, password) => {
         window.localStorage.setItem('loggedUser', JSON.stringify(user));
         achievementService.setToken(user.token);
         dispatch(setUser(user));
+        return user;
     };
 };
 export default userSlice.reducer;

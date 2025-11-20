@@ -1,7 +1,7 @@
 import { TextField, Button } from '@mui/material';
 import {Link, useNavigate} from 'react-router-dom';
-import {useState} from "react";
-import {useDispatch} from "react-redux";
+import {useState, useEffect} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import {loginAction, setUser} from "../reducers/userReducer.js";
 
 const Login = () => {
@@ -9,7 +9,14 @@ const Login = () => {
     const [password, setPassword] = useState('');
 
     const dispatch = useDispatch();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
+    const user = useSelector((state) => state.user);
+
+    useEffect(() => {
+        console.log('User changed:', user)
+        if (user) navigate('/users');
+    }, [user]);
 
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -18,7 +25,6 @@ const Login = () => {
             console.log(username);
             setUsername('');
             setPassword('');
-            navigate('/users')
         } catch (error) {
 //            dispatch(setErrorNotificationWTimer(`${error.response.data.error}`, 5));
             setUsername('');
