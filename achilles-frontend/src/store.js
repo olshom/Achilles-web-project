@@ -5,6 +5,7 @@ import achievementsReducer from "./reducers/achievementsReducer.js";
 import groupsReducer from "./reducers/groupsReducer.js";
 import plansReducer from "./reducers/plansReducer.js";
 import rolesReducer from "./reducers/rolesReducer.js";
+import eventsReducer from "./reducers/eventsReducer.js";
 
 
 const store = configureStore({
@@ -15,6 +16,7 @@ const store = configureStore({
         groups: groupsReducer,
         plans: plansReducer,
         roles: rolesReducer,
+        events: eventsReducer
     }
 });
 

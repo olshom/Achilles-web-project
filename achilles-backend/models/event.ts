@@ -4,21 +4,24 @@ import {
     InferAttributes,
     InferCreationAttributes,
     CreationOptional,
-    HasManyAddAssociationsMixin
+    HasManyAddAssociationsMixin, BelongsToManySetAssociationsMixin, ForeignKey, HasManyCreateAssociationMixin,
 } from 'sequelize';
 import { sequelize } from '../util/db';
 import Group from "./group";
+import User from "./user";
+import EventEntry from "./eventEntry";
 
 class Event extends Model<InferAttributes<Event>, InferCreationAttributes<Event>> {
     declare id: CreationOptional<number>;
-    declare eventType: string;
-    declare uniform: 'Gi'|'No Gi'| 'Gi + No Gi';
-    declare start: string;
-    declare end: string;
+    declare title: string;
+    declare isRecurring: boolean;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
-    declare description: CreationOptional<string>;
-    declare addGroups: HasManyAddAssociationsMixin<Group, number>
+    declare addGroups: HasManyAddAssociationsMixin<Group, number>;
+    declare coach: CreationOptional<ForeignKey<User['id']> | null>;
+//    declare coach?: NonAttribute<User>;
+    declare setGroups: BelongsToManySetAssociationsMixin<Group, number>;
+    declare createEventEntry: HasManyCreateAssociationMixin<EventEntry,'eventId'>;
 }
 
 Event.init({
@@ -27,23 +30,21 @@ Event.init({
         primaryKey: true,
         autoIncrement: true,
     },
-    eventType: {
+        title: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    uniform: {
-        type: DataTypes.STRING,
-    },
-    start: {
-        type: DataTypes.DATE,
+        coach: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'users',
+                key: 'id'
+            }
+        },
+    isRecurring: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-    },
-    end: {
-        type: DataTypes.DATE,
-        allowNull: false,
-    },
-    description: {
-        type: DataTypes.TEXT,
     },
         createdAt: DataTypes.DATE,
         updatedAt: DataTypes.DATE

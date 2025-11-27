@@ -13,6 +13,7 @@ import User from "./components/User.jsx";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Achievement from "./components/Achievement.jsx";
+import Events from "./components/Events.jsx";
 
 function App() {
     const user = useSelector(({ user }) => user);
@@ -86,9 +87,9 @@ function App() {
                     <Routes>
 
                         <Route path="/login" element={<Login/>}/>
-{/*
+
                         <Route path="/events" element={<Events />}/>
-*/}
+
                         <Route path="/signup" element={<Signup/>}/>
                         <Route path="/users" element={<Users/>}/>
                         <Route path="/users/:id" element={<User user={userOfClub}/>}/>

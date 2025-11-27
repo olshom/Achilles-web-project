@@ -42,7 +42,6 @@ router.post('/', async (req, res) => {
             ]})
         res.json(achievement);
     }
-
 })
 
 router.get('/:id', async (req, res) => {
