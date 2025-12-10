@@ -4,11 +4,11 @@ import {
     InferAttributes,
     InferCreationAttributes,
     CreationOptional,
-    HasManyAddAssociationsMixin, BelongsToManySetAssociationsMixin, ForeignKey, HasManyCreateAssociationMixin,
+    HasManyAddAssociationsMixin, BelongsToManySetAssociationsMixin, HasManyCreateAssociationMixin,
 } from 'sequelize';
 import { sequelize } from '../util/db';
 import Group from "./group";
-import User from "./user";
+
 import EventEntry from "./eventEntry";
 
 class Event extends Model<InferAttributes<Event>, InferCreationAttributes<Event>> {
@@ -18,8 +18,7 @@ class Event extends Model<InferAttributes<Event>, InferCreationAttributes<Event>
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
     declare addGroups: HasManyAddAssociationsMixin<Group, number>;
-    declare coach: CreationOptional<ForeignKey<User['id']> | null>;
-//    declare coach?: NonAttribute<User>;
+
     declare setGroups: BelongsToManySetAssociationsMixin<Group, number>;
     declare createEventEntry: HasManyCreateAssociationMixin<EventEntry,'eventId'>;
 }
@@ -34,14 +33,6 @@ Event.init({
         type: DataTypes.STRING,
         allowNull: false,
     },
-        coach: {
-            type: DataTypes.INTEGER,
-            allowNull: true,
-            references: {
-                model: 'users',
-                key: 'id'
-            }
-        },
     isRecurring: {
         type: DataTypes.BOOLEAN,
         allowNull: false,

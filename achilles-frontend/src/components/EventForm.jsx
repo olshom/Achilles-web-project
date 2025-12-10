@@ -1,12 +1,14 @@
 import { Paper, TextField, FormControl, InputLabel, Select, MenuItem, Button, Stack } from '@mui/material';
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import dayjs from 'dayjs';
-import {DateTimePicker, TimePicker, DatePicker} from "@mui/x-date-pickers";
+import {TimePicker, DatePicker} from "@mui/x-date-pickers";
 import {useSelector, useDispatch} from "react-redux";
 import {initializeGroups} from "../reducers/groupsReducer.js";
 import eventsService from "../services/events.js";
+import {initializeUsers} from "../reducers/usersReducer.js";
+import {selectUsersByRole} from "../selectors/usersSelectors.js";
 
-const EventForm = ({onEventCreated}) => {
+const EventForm = ({onEventCreated, onCancel}) => {
     const [title, setTitle] = useState('');
     const [eventType, setEventType] = useState('one-time');
     const [eventDate, setEventDate] = useState(dayjs());
@@ -14,38 +16,51 @@ const EventForm = ({onEventCreated}) => {
     const [endEventTime, setEndEventTime] = useState(dayjs());
     const [recurringDays, setRecurringDays] = useState([]);
     const [recurringStartDate, setRecurringStartDate] = useState(dayjs());
-    const [recurringEndDate, setRecurringEndDate] = useState(null);
+    const [recurringEndDate, setRecurringEndDate] = useState(dayjs());
     const [selectedGroups, setSelectedGroups] = useState([]);
+    const [coach, setCoach] = useState('');
+    const [uniform, setUniform] = useState('');
+    const [description, setDescription] = useState('');
+
+    const uniforms = ['Gi', 'No-Gi', 'Gi & No-Gi'];
 
     const groups = useSelector(state => state.groups);
+    const role = 'coach';
+    const memoizedCoaches = useMemo(() => selectUsersByRole(role), [role]);
+    const coaches = useSelector(state => memoizedCoaches(state));
+    console.log("coaches", coaches);
     const dispatch = useDispatch();
 
     useEffect(() => {
         dispatch(initializeGroups())
+        dispatch(initializeUsers())
     }, [])
 
-    const handleSubmit = event => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const newEvent = {
             title,
             eventType,
+            coach,
             selectedGroups,
             timeZone:  Intl.DateTimeFormat().resolvedOptions().timeZone
         }
         if (eventType === 'one-time') {
             newEvent.isRecurring = false;
-            newEvent.date = eventDate.format('YYYY-MM-DD');
+            newEvent.date = eventDate;
             newEvent.startTime = startEventTime.format('HH:mm');
             newEvent.endTime = endEventTime.format('HH:mm');
+            newEvent.uniform = uniform;
+            newEvent.description = description;
         } else if (eventType === 'recurring') {
             newEvent.isRecurring = true;
             newEvent.recurringDays = recurringDays;
-            newEvent.recurringStartDate = recurringStartDate.format('YYYY-MM-DD');
-            newEvent.recurringEndDate = recurringEndDate.format('YYYY-MM-DD');
+            newEvent.recurringStartDate = recurringStartDate;
+            newEvent.recurringEndDate = recurringEndDate;
             newEvent.startTime = startEventTime.format('HH:mm');
             newEvent.endTime = endEventTime.format('HH:mm');
         }
-        eventsService.postEvent(newEvent);
+        await eventsService.postEvent(newEvent);
         console.log('Creating event:', newEvent);
         onEventCreated();
     }
@@ -73,6 +88,19 @@ const EventForm = ({onEventCreated}) => {
                     </Select>
                 </FormControl>
                 <FormControl fullWidth style={{ marginBottom: '1rem' }}>
+                    <InputLabel>Coach</InputLabel>
+                    <Select
+                        value={coach}
+                        onChange={(e) => setCoach(e.target.value)}
+                    >
+                        {coaches.map((coach) => (
+                            <MenuItem key={coach.id} value={coach.id}>
+                                {coach.firstName} {coach.lastName}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <FormControl fullWidth style={{ marginBottom: '1rem' }}>
                     <InputLabel>Assign to Group</InputLabel>
                     <Select
                         multiple
@@ -87,18 +115,19 @@ const EventForm = ({onEventCreated}) => {
                     </Select>
                 </FormControl>
 
+
                 {eventType === 'one-time' ? (
                     <Stack spacing={2} sx={{ minWidth: 305 }}>
-{/*                    <DateTimePicker
-                        label="start"
-                        value={startEventTime}
-                        onChange={(newValue) =>setStartEventTime(newValue)}
-                    />
-                        <DateTimePicker
-                            label="end"
-                            value={endEventTime}
-                            onChange={(newValue) =>setEndEventTime(newValue)}
-                        />*/}
+                        <FormControl fullWidth style={{ marginBottom: '1rem' }}>
+                            <InputLabel>Uniform</InputLabel>
+                            <Select value={uniform} onChange={(e) => setUniform(e.target.value)}>
+                                {uniforms.map((uni) => (
+                                <MenuItem key={uni} value={uni}>
+                                    {uni}
+                                </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                         <DatePicker
                             label="start"
                             required
@@ -118,6 +147,16 @@ const EventForm = ({onEventCreated}) => {
                             value={endEventTime}
                             onChange={(newValue) =>setEndEventTime(newValue)}
                         />
+
+                        <TextField
+                            label="Description"
+                            type="text"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            fullWidth
+                            multiline
+                            rows={3}
+                        ></TextField>
                     </Stack>
                 ) : (
                     <Stack spacing={2} sx={{ minWidth: 305 }}>
@@ -168,6 +207,9 @@ const EventForm = ({onEventCreated}) => {
                 )}
                 <Button type="submit" variant="contained" color="primary">
                     Create Event
+                </Button>
+                <Button variant="outlined" color="secondary" onClick={onCancel}>
+                    cancel
                 </Button>
             </form>
         </Paper>

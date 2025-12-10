@@ -36,6 +36,7 @@ const User = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const user = useSelector(state => state.user);
 
     const groups = useSelector((state) => state.groups);
     const plans = useSelector((state) => state.plans);
@@ -255,50 +256,52 @@ const User = () => {
                             </TableCell>
                         </TableRow>
                     ))}
-                <TableRow>
-                    <TableCell>
+                    {user.roles.includes('admin')&&
+                        <TableRow>
+                        <TableCell>
                         <Button
-                            color="primary"
-                            variant="contained"
-                            onClick={async () => {
-                                if (editEnabled) {
-                                    const updatedUser = {
-                                        username: username,
-                                        firstName: firstName,
-                                        lastName: lastName,
-                                        belt: belt,
-                                        planId: planId,
-                                        roles: userRoles,
-                                        groupId: groupId
-                                    }
-                                    const updUser = await usersService.updateUser(id, updatedUser);
-                                    dispatch(updateUser(updUser));
-                                    setUserForView(updUser);
-                                    setEditEnabled(false)
-                                } else {
-                                    setEditEnabled(true)
-                                }
-                            }}
-                        >
-                            Update user info
-                        </Button>
+                        color="primary"
+                        variant="contained"
+                        onClick={async () => {
+                        if (editEnabled) {
+                        const updatedUser = {
+                        username: username,
+                        firstName: firstName,
+                        lastName: lastName,
+                        belt: belt,
+                        planId: planId,
+                        roles: userRoles,
+                        groupId: groupId
+                    }
+                        const updUser = await usersService.updateUser(id, updatedUser);
+                        dispatch(updateUser(updUser));
+                        setUserForView(updUser);
+                        setEditEnabled(false)
+                    } else {
+                        setEditEnabled(true)
+                    }
+                    }}
+                >
+                    Update user info
+                </Button>
 
-                        {editEnabled&&<div><Button variant="outlined" color="secondary" onClick={() => setEditEnabled(false)}>
-                            cancel
-                        </Button>
-                            <Button
-                            color="primary"
-                            variant="contained"
-                            onClick={() => {
-                                handleDeleteUser(userForView.id);
-                            }}
-                        >
-                            Delete user
-                        </Button>
-                        </div>
-                        }
-                    </TableCell>
-                </TableRow>
+                {editEnabled&&<div><Button variant="outlined" color="secondary" onClick={() => setEditEnabled(false)}>
+                    cancel
+                </Button>
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={() => {
+                            handleDeleteUser(userForView.id);
+                        }}
+                    >
+                        Delete user
+                    </Button>
+                </div>
+                }
+            </TableCell>
+        </TableRow>
+}
                 </TableBody>
             </Table>
         </TableContainer>

@@ -31,6 +31,13 @@ export const initializeEvents = () => {
     }
 }
 
+export const deleteEventAction = (id) => {
+    return async (dispatch) => {
+        await eventsService.deleteEvent(id);
+        dispatch(deleteEvent(id));
+    }
+}
+
 /*export const addEventAction = (event) => {
     return async (dispatch) => {
         const newEvent = await eventsService.addEvent(event);
@@ -39,12 +46,7 @@ export const initializeEvents = () => {
     }
 }
 
-export const deleteEventAction = (id) => {
-    return async (dispatch) => {
-        await eventsService.deleteEvent(id);
-        dispatch(deleteEvent(id));
-    }
-}
+
 
 export const updateEventAction = (event) => {
     return async (dispatch) => {

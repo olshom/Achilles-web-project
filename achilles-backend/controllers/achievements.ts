@@ -1,5 +1,6 @@
 import express from 'express';
 import {Achievement, User} from "../models";
+import {isAdmin, userExtractor} from "../util/middleware";
 
 const router = express.Router();
 
@@ -21,7 +22,8 @@ router.get('/', async (_req, res) => {
     res.json(achievements);
 })
 
-router.post('/', async (req, res) => {
+router.post('/',userExtractor, isAdmin ,async (req, res) => {
+    console.log("I want to see req", req)
     const {userId, type, description, date} = req.body;
     const user = await User.findByPk(userId);
     if (!user) {
@@ -67,13 +69,13 @@ router.get('/:id', async (req, res) => {
     }
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', isAdmin ,async (req, res) => {
     const {id} = req.params;
     await Achievement.destroy({where: {id}})
     res.status(204).end()
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', isAdmin, async (req, res) => {
     const {id} = req.params;
     const achievement = await Achievement.findByPk(id)
     if (!achievement) {

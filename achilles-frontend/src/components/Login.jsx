@@ -15,14 +15,15 @@ const Login = () => {
 
     useEffect(() => {
         console.log('User changed:', user)
-        if (user) navigate('/users');
-    }, [user]);
+        if (user) navigate('/events');
+    }, []);
 
     const handleLogin = async (event) => {
         event.preventDefault();
         try {
             await dispatch(loginAction(username, password));
             console.log(username);
+            navigate('/events');
             setUsername('');
             setPassword('');
         } catch (error) {

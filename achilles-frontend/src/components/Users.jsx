@@ -1,5 +1,4 @@
-import {useSelector} from "react-redux";
-import User from "../components/User";
+
 import {Link} from "react-router-dom";
 import {
     Table,
@@ -9,18 +8,28 @@ import {
     TableRow,
     Paper,
 } from '@mui/material'
+import {useDispatch, useSelector} from "react-redux";
+import {useEffect, useMemo} from "react";
+import {selectUsersByRole} from "../selectors/usersSelectors.js";
+import {initializeUsers} from "../reducers/usersReducer.js";
 
-const Users = () => {
-    const users = useSelector(state => state.users)
+const Users = ({role, url}) => {
+    const dispatch = useDispatch();
+    const memoizedSelectUsers = useMemo(() => selectUsersByRole(role), [role]);
+    const selectUsersMemoized = useSelector(state => memoizedSelectUsers(state));
+    useEffect(() => {
+        dispatch(initializeUsers());
+    }, [dispatch]);
+
     return (
         <div>
             <TableContainer component={Paper}>
                 <Table>
                     <TableBody>
-                        {users.map(user =>(
+                        {selectUsersMemoized.map(user =>(
                             <TableRow key={user.id}>
                                 <TableCell>
-                                    <Link to={`/users/${user.id}`}>{user.firstName} {user.lastName}</Link>
+                                    <Link to={`/${url}/${user.id}`}>{user.firstName} {user.lastName}</Link>
                                 </TableCell>
                             </TableRow>
                             )

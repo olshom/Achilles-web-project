@@ -1,6 +1,6 @@
 import {useDispatch, useSelector} from "react-redux";
 import {Paper, Table, TableBody, TableCell, TableContainer, TableRow} from "@mui/material";
-import {Link, Route, Routes, useMatch} from "react-router-dom";
+import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {addAchievementAction, initializeAchievements} from "../reducers/achievementsReducer.js";
 import {setUser} from "../reducers/userReducer.js";
@@ -12,8 +12,6 @@ import {
 import {initializeUsers} from "../reducers/usersReducer.js";
 import {DatePicker} from "@mui/x-date-pickers";
 import dayjs from 'dayjs';
-import Achievement from "./Achievement.jsx";
-
 
 const Achievements = () => {
     const achievements = useSelector((state) => state.achievements);
@@ -27,16 +25,6 @@ const Achievements = () => {
     const [formIsVisible, setFormIsVisible] = useState(false);
     const [date, setDate] = useState(dayjs());
 
-
-    useEffect(() => {
-        const loggedUserJSON = window.localStorage.getItem('loggedUser');
-        console.log('loggedUser', loggedUserJSON);
-        if (loggedUserJSON) {
-            const user = JSON.parse(loggedUserJSON);
-            dispatch(setUser(user));
-//            blogService.setToken(user.token);
-        }
-    }, []);
 
     useEffect(() => {
         dispatch(initializeAchievements());
@@ -139,7 +127,7 @@ const Achievements = () => {
 
     return (
         <div>
-            {user.roles.includes('coach'||'admin')&&!formIsVisible && (
+            {user.roles.includes('admin')&&!formIsVisible && (
                 <Button
                     variant="contained"
                     color="primary"
@@ -149,17 +137,25 @@ const Achievements = () => {
                     add new achievement
                 </Button>
             )}
-            {user.roles.includes('coach'||'admin')&&formIsVisible&&addAchievementForm()}
+            {user.roles.includes('admin')&&formIsVisible&&addAchievementForm()}
             <TableContainer component={Paper}>
                 <Table>
                     <TableBody>
                         {achievements.map(achievement =>(
                                 <TableRow key={achievement.id}>
                                     <TableCell>
-                                        <Link to={`/achievements/${achievement.id}`}>{achievement.type}</Link>
+                                        {achievement.type}
+                                    </TableCell>
+                                    <TableCell>
+                                        {dayjs(achievement.date).format('MMMM D, YYYY')}
                                     </TableCell>
                                     <TableCell>
                                         {achievement.user.firstName} {achievement.user.lastName}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Button color="inherit"
+                                                variant="contained" component={Link}
+                                                to={`/achievements/${achievement.id}`}>Show more</Button>
                                     </TableCell>
                                 </TableRow>
                             )

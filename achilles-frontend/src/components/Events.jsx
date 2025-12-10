@@ -1,53 +1,110 @@
 import {Button} from "@mui/material";
 import EventForm from "./EventForm.jsx";
 import {useEffect, useRef, useState} from "react";
+import {useSelector, useDispatch} from "react-redux";
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import eventsService from "../services/events.js";
-import {useDispatch, useSelector} from "react-redux";
-import {initializeEvents} from "../reducers/eventsReducer.js";
+import recurringEventsService from "../services/recurringEvents.js";
+import Event from "./Event.jsx";
+import {deleteEventAction} from "../reducers/eventsReducer.js";
+
 
 const Events = () => {
     const [formIsVisible, setFormIsVisible] = useState(false);
-    const calendarRef = useRef(null);
-/*    const events = useSelector(state => state.events);
+    const [events, setEvents] = useState([]);
+    const [isEventsFiltered, setIsEventsFiltered] = useState(false);
+    const [eventWindowOpen, setEventWindowOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [selectedEventPlain, setSelectedEventPlain] = useState(null);
+
     const dispatch = useDispatch();
+    const calendarRef = useRef(null);
+    const user = useSelector(state => state.user);
+    console.log('user', user)
 
-    useEffect(() => {
-        dispatch(initializeEvents());
-    }, [])*/
+    const openEventFunctions = async(info) => {
+        info.jsEvent.preventDefault();
+        //open modal with 3 options delete, edit, delete all
+        console.log('click is working', info.event.id);
+        setSelectedEvent(info.event);
+        setSelectedEventPlain({
+            id: info.event.id,
+            title: info.event.title,
+            start: info.event.start,
+            end: info.event.end,
+            description: info.event.extendedProps.description,
+            groups: info.event.extendedProps.groups,
+            uniform: info.event.extendedProps.uniform,
+            isRecurring: info.event.extendedProps.isRecurring,
+            coach: info.event.extendedProps.coach,
+        });
+        setEventWindowOpen(true);
+    }
+//it looks like it can be one function for deleting one event
+    const handleDelete = async () => {
+        if (window.confirm("Are you sure you want to delete this event?")&&selectedEvent) {
+            await eventsService.deleteEvent(selectedEvent.id);
 
-    const initEvents = async (info, successCallback, failureCallback) => {
+            selectedEvent.remove();
+            // Refresh events
+/*            const calendarApi = calendarRef.current.getApi();
+            const view = calendarApi.view;
+            await fetchEvents(view.activeStart.toISOString().split('T')[0], view.activeEnd.toISOString().split('T')[0]);*/
+            setEventWindowOpen(false);
+            setSelectedEvent(null);
+            setSelectedEventPlain(null);
+        }
+    }
+//for deleting all recurring events
+    const handleDeleteAll = async () => {
+        if (window.confirm("Are you sure you want to delete all similar events?")&&selectedEvent) {
+            await recurringEventsService.deleteEvent(selectedEvent.extendedProps.eventId);
+            // Refresh events
+            const calendarApi = calendarRef.current.getApi();
+            const view = calendarApi.view;
+            await fetchEvents(view.activeStart.toISOString().split('T')[0], view.activeEnd.toISOString().split('T')[0]);
+            setEventWindowOpen(false);
+            setSelectedEvent(null);
+            setSelectedEventPlain(null);
+        }
+    }
+
+    const fetchEvents = async (start, end) => {
+        console.log('fetchEvents')
         try {
-            const startUTC = info.start.toISOString();
-            const endUTC = info.end.toISOString();
-
-            let events = await eventsService.getAllEvents(info.startStr, info.endStr);
-            console.log("events before mapping", events);
+            let events = await eventsService.getAllEvents(start, end);
+            console.log("events", events);
+            console.log("I want to see users fields", user);
         const coloredEvents = events.map(event => ({
+
             id: event.id,
             title: event.event.title,
             start: event.start,
             end: event.end,
             extendedProps: {
+                eventId: event.eventId,
                 groups: event.event.groups.map((group) => group.name).join(", "),
                 description: event.description,
-                uniform: event.uniform
+                uniform: event.uniform,
+                isRecurring: event.event.isRecurring,
+                coachId: event.coachId,
+                coach: event.coach.firstName + ' ' + event.coach.lastName
             },
             display: "block"
     }));
         console.log("events", coloredEvents);
-        successCallback(coloredEvents);
-
+        setEvents(coloredEvents);
     } catch (err) {
-        failureCallback(err);
+        console.log(err);
     }
 }
+
     const showEvent = (arg)=>  {
         const event = arg.event.extendedProps;
-        // Format start and end times manually
+
         const startTime = arg.event.start.toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: '2-digit',
@@ -70,26 +127,62 @@ const Events = () => {
             `
         };
     }
-    const handleEventCreated = () => {
+    const handleEventCreated = async () => {
         setFormIsVisible(false);
-        if (calendarRef.current) {
-            calendarRef.current.getApi().refetchEvents();
-        }
+        // Re-fetch events for current view
+        const calendarApi = calendarRef.current.getApi();
+        const view = calendarApi.view;
+        await fetchEvents(view.activeStart.toISOString().split('T')[0], view.activeEnd.toISOString().split('T')[0]);
+    };
+
+    const handleDatesSet = async (info) => {
+        await fetchEvents(info.startStr, info.endStr);
     }
 
     return (
         <div>
-            <Button
+            {user&&user.roles.includes('admin')?
+                <Button
                 variant="contained"
                 color="primary"
                 onClick={() => setFormIsVisible(true)}
                 style={{ marginBottom: '1rem' }}
             >
                 add new event
-            </Button>
-            {formIsVisible && <EventForm onEventCreated={handleEventCreated} />}
-            <h2>Events Page</h2>
-            <p>This is where the events will be displayed.</p>
+            </Button>:null}
+            {user&&user.group?<Button variant="contained" color="primary" onClick={()=>setIsEventsFiltered(!isEventsFiltered)} style={{ marginBottom: '1rem' }}>
+                {!isEventsFiltered?'show my group events':'show all club events'}
+            </Button>: null}
+
+            {selectedEvent&&<Event event={selectedEventPlain}
+                                   open={eventWindowOpen}
+                                   setOpen={setEventWindowOpen}
+                                   handleDelete={handleDelete}
+                                   handleDeleteAll={handleDeleteAll}
+            />}
+            {/*<Dialog
+                open={eventWindowOpen}
+                onClose={() => setEventWindowOpen(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {selectedEvent.title}
+                </DialogTitle>
+                <DialogContent>
+                    <p>{selectedEvent.extendedProps.description}</p>
+                    <p><b>Groups:</b> {selectedEvent.extendedProps.groups}</p>
+                    <p><b>Uniform:</b> {selectedEvent.extendedProps.uniform}</p>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Delete</Button>
+                    <Button onClick={handleClose} autoFocus>
+                        Update
+                    </Button>
+                </DialogActions>
+            </Dialog>*/}
+
+            {formIsVisible && <EventForm onEventCreated={handleEventCreated} onCancel={() => setFormIsVisible(false)}/>}
             <FullCalendar
                 plugins={[ dayGridPlugin, timeGridPlugin, interactionPlugin ]}
                 ref={calendarRef}
@@ -99,10 +192,12 @@ const Events = () => {
                     center: 'title',
                     end: 'dayGridMonth,timeGridWeek,timeGridDay'
                 }}
-                events={initEvents}
+                events={!isEventsFiltered?events:events.filter(event => event.extendedProps.groups.includes(user.group.name))}
+                eventClick={openEventFunctions}
+                datesSet={handleDatesSet}
                 eventContent={showEvent}
                 height="auto"
-                slotMinTime="10:00:00"
+                slotMinTime="9:00:00"
                 slotMaxTime="20:00:00"
             />
         </div>

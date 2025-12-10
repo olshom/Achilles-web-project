@@ -13,11 +13,10 @@ import {
 } from '@mui/material'
 import {DatePicker} from "@mui/x-date-pickers";
 import dayjs from 'dayjs';
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 
 
 const Achievement = () => {
- //   console.log('message',achievementId);
     const id = useParams().id
     const [achievement, setAchievement] = useState(null);
     const [editEnabled, setEditEnabled] = useState(false);
@@ -27,6 +26,7 @@ const Achievement = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const user = useSelector(state => state.user);
 
     const fetchAchievement = async () => {
         try {
@@ -59,7 +59,7 @@ const Achievement = () => {
             console.log(error);
         }
     }
-    if (!achievement) {
+    if (!achievement|| !user) {
         return "Loading...";
     }
     return (
@@ -154,7 +154,8 @@ const Achievement = () => {
                         </Button>
                     </TableCell>
                 </TableRow>
-                <TableRow>
+                {user.roles.includes('admin') && (
+                    <TableRow>
                     <TableCell>
                         <Button
                             color="primary"
@@ -191,23 +192,23 @@ const Achievement = () => {
                     <TableCell>
                         {editEnabled && (
                             <div>
-                            <Button
-                                color="secondary"
-                                variant="outlined"
-                                onClick={() => {
-                                    // Reset to original values
-                                    setType(achievement.type);
-                                    setDescription(achievement.description);
-                                    setDate(dayjs(achievement.date));
-                                    setEditEnabled(false);
-                                }}
-                            >
-                                Cancel
-                            </Button>
+                                <Button
+                                    color="secondary"
+                                    variant="outlined"
+                                    onClick={() => {
+                                        // Reset to original values
+                                        setType(achievement.type);
+                                        setDescription(achievement.description);
+                                        setDate(dayjs(achievement.date));
+                                        setEditEnabled(false);
+                                    }}
+                                >
+                                    Cancel
+                                </Button>
                             </div>
                         )}
                     </TableCell>
-                </TableRow>
+                </TableRow>)}
             </TableBody>
         </Table>
     </TableContainer>

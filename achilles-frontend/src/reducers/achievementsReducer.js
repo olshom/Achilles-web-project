@@ -7,11 +7,11 @@ const achievementsSlice = createSlice({
     initialState: [],
     reducers: {
         setAllAchievements: (state, action) => {
-            return action.payload;
+            return action.payload.sort((a, b) => new Date(b.date) - new Date(a.date));
         },
         appendAchievement: (state, action) => {
             state.push(action.payload);
-//            state.sort((a, b) => a.date - b.date);
+            state.sort((a, b) => new Date(b.date) - new Date(a.date));
         },
         deleteAchievement: (state, action) => {
             const achievementToDeleteId = action.payload;

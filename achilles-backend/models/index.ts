@@ -25,8 +25,16 @@ Role.belongsToMany(User, {through: 'user_roles', foreignKey: 'role_id', as: 'use
 
 /*Event.belongsToMany(Group, { through: 'EventGroups', as: 'groups', foreignKey: 'eventId' });
 Group.belongsToMany(Event, { through: 'EventGroups', as: 'events', foreignKey: 'groupId' });*/
-Event.belongsTo(User, { foreignKey: 'coach',  });
-User.hasMany(Event, { foreignKey: 'coach', as : 'coached_events' });
+EventEntry.belongsTo(User, { foreignKey: 'coach_id', as: 'coach'});
+
+
+
+
+User.hasMany(EventEntry, {sourceKey: 'id', foreignKey: 'coach_id', as : 'events' });
+
+
+
+
 
 Event.hasMany(EventEntry, { as: 'event_entries', foreignKey: 'eventId'});
 EventEntry.belongsTo(Event, { as: 'event', foreignKey: 'eventId' });

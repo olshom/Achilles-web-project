@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "./index.js";
 const baseURL = "http://localhost:3003/api/plans/";
 
 const getAllPlans = async () => {

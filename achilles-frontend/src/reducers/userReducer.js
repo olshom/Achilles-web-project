@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import loginService from '../services/login.js';
-import achievementService from '../services/achievements.js'
 
 
 const userSlice = createSlice({
@@ -8,9 +7,9 @@ const userSlice = createSlice({
     initialState: null,
     reducers: {
         setUser(state, action) {
+            console.log(action.payload);
             return action.payload;
         },
-
     },
 });
 
@@ -18,14 +17,21 @@ export const { setUser } = userSlice.actions;
 
 export const loginAction = (username, password) => {
     return async (dispatch) => {
-        const user = await loginService.login({
+        const response = await loginService.login({
             username,
             password,
         });
-        window.localStorage.setItem('loggedUser', JSON.stringify(user));
-        achievementService.setToken(user.token);
-        dispatch(setUser(user));
-        return user;
+        const loggedUser = {
+            token: response.token,
+            id: response.id,
+            roles: response.roles,
+            username: response.username,
+            group: response.group
+        };
+        window.localStorage.setItem('loggedUser', JSON.stringify(loggedUser));
+        const {token, ...userForStore} = response;
+        dispatch(setUser(userForStore));
+        return userForStore;
     };
 };
 export default userSlice.reducer;

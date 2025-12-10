@@ -1,11 +1,5 @@
-import axios from "axios";
-const baseURL = "http://localhost:3003/api/events/";
-
-let token = null;
-
-const setToken = (newToken) => {
-    token = `Bearer ${newToken}`;
-};
+import axios from "./index.js";
+const baseURL = "http://localhost:3003/api/eventEntries/";
 
 const getAllEvents = async (start, end) => {
     const res = await axios.get(baseURL, {
@@ -15,11 +9,13 @@ const getAllEvents = async (start, end) => {
 }
 
 const postEvent = async (event) => {
-/*    const config = {
-        headers: { Authorization: token },
-    };*/
     const response = await axios.post(baseURL, event);
     return response.data;
 }
 
-export default {getAllEvents, postEvent}
+const deleteEvent = async (id) => {
+    const response = await axios.delete(`${baseURL}${id}`);
+    return response.data;
+}
+
+export default {getAllEvents, postEvent, deleteEvent}
