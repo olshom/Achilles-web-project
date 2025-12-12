@@ -8,27 +8,30 @@ import eventsService from "../services/events.js";
 import {initializeUsers} from "../reducers/usersReducer.js";
 import {selectUsersByRole} from "../selectors/usersSelectors.js";
 
-const EventForm = ({onEventCreated, onCancel}) => {
-    const [title, setTitle] = useState('');
-    const [eventType, setEventType] = useState('one-time');
-    const [eventDate, setEventDate] = useState(dayjs());
-    const [startEventTime, setStartEventTime] = useState(dayjs());
-    const [endEventTime, setEndEventTime] = useState(dayjs());
+const EventForm = ({initValues , onEventCreated, onCancel}) => {
+    const [title, setTitle] = useState(initValues.event.title || '');
+    const [eventType, setEventType] = useState(initValues.event.isRecurring ? 'recurring' : 'one-time');
+    const [eventDate, setEventDate] = useState(dayjs(initValues.eventDate) || dayjs());
+    const [startEventTime, setStartEventTime] = useState(dayjs(initValues.startEventTime) || dayjs());
+    const [endEventTime, setEndEventTime] = useState(dayjs(initValues.endEventTime) || dayjs());
     const [recurringDays, setRecurringDays] = useState([]);
-    const [recurringStartDate, setRecurringStartDate] = useState(dayjs());
-    const [recurringEndDate, setRecurringEndDate] = useState(dayjs());
-    const [selectedGroups, setSelectedGroups] = useState([]);
-    const [coach, setCoach] = useState('');
-    const [uniform, setUniform] = useState('');
-    const [description, setDescription] = useState('');
+    const [recurringStartDate, setRecurringStartDate] = useState(dayjs(initValues.recurringStartDate) || dayjs());
+    const [recurringEndDate, setRecurringEndDate] = useState(dayjs(initValues.recurringEndDate) || dayjs());
+    const [selectedGroups, setSelectedGroups] = useState(initValues.event.groups.map(group=>group.id) || []);
+    const [coach, setCoach] = useState(initValues.coachId || '');
+    const [uniform, setUniform] = useState(initValues.uniform||'Gi');
+    const [description, setDescription] = useState(initValues.description || '');
 
+    const initialState = {
+        title: '',
+    }
+    console.log('I see init event', initValues)
     const uniforms = ['Gi', 'No-Gi', 'Gi & No-Gi'];
 
     const groups = useSelector(state => state.groups);
     const role = 'coach';
     const memoizedCoaches = useMemo(() => selectUsersByRole(role), [role]);
     const coaches = useSelector(state => memoizedCoaches(state));
-    console.log("coaches", coaches);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -61,7 +64,6 @@ const EventForm = ({onEventCreated, onCancel}) => {
             newEvent.endTime = endEventTime.format('HH:mm');
         }
         await eventsService.postEvent(newEvent);
-        console.log('Creating event:', newEvent);
         onEventCreated();
     }
 
@@ -71,8 +73,12 @@ const EventForm = ({onEventCreated, onCancel}) => {
             <form onSubmit={handleSubmit}>
                 <TextField
                     label="Title"
+                    name="title"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={(e) => {
+                        console.log('e target',e.target);
+                        setTitle(e.target.value)
+                    }}
                     fullWidth
                     required
                     style={{ marginBottom: '1rem' }}
@@ -114,8 +120,6 @@ const EventForm = ({onEventCreated, onCancel}) => {
                         ))}
                     </Select>
                 </FormControl>
-
-
                 {eventType === 'one-time' ? (
                     <Stack spacing={2} sx={{ minWidth: 305 }}>
                         <FormControl fullWidth style={{ marginBottom: '1rem' }}>

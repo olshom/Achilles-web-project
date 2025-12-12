@@ -15,10 +15,12 @@ import {deleteEventAction} from "../reducers/eventsReducer.js";
 const Events = () => {
     const [formIsVisible, setFormIsVisible] = useState(false);
     const [events, setEvents] = useState([]);
+    const [eventsForView, setEventsForView] = useState([]);
     const [isEventsFiltered, setIsEventsFiltered] = useState(false);
     const [eventWindowOpen, setEventWindowOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [selectedEventPlain, setSelectedEventPlain] = useState(null);
+    const [initialValueForEventForm, setInitialValueForEventForm] = useState(null);
 
     const dispatch = useDispatch();
     const calendarRef = useRef(null);
@@ -28,9 +30,18 @@ const Events = () => {
     const openEventFunctions = async(info) => {
         info.jsEvent.preventDefault();
         //open modal with 3 options delete, edit, delete all
-        console.log('click is working', info.event.id);
+        console.log('click is working',  (info.event.id));
+        //I use this FC obj only for deleting
+
+        //mb I can take from init eventsForView
+        console.log('co see info ovject', info.event);
+        console.log('to check init events', events);
+        console.log('TO SEE ID', events.find(event => event.id === Number(info.event.id)));
+        const eventPlainObj = events.find(event => event.id === Number(info.event.id));
         setSelectedEvent(info.event);
-        setSelectedEventPlain({
+        setSelectedEventPlain(eventPlainObj);
+        console.log('selectedEventPlain', eventPlainObj);
+/*        setSelectedEventPlain({
             id: info.event.id,
             title: info.event.title,
             start: info.event.start,
@@ -40,7 +51,7 @@ const Events = () => {
             uniform: info.event.extendedProps.uniform,
             isRecurring: info.event.extendedProps.isRecurring,
             coach: info.event.extendedProps.coach,
-        });
+        });*/
         setEventWindowOpen(true);
     }
 //it looks like it can be one function for deleting one event
@@ -49,7 +60,7 @@ const Events = () => {
             await eventsService.deleteEvent(selectedEvent.id);
 
             selectedEvent.remove();
-            // Refresh events
+            // Refresh eventsForView
 /*            const calendarApi = calendarRef.current.getApi();
             const view = calendarApi.view;
             await fetchEvents(view.activeStart.toISOString().split('T')[0], view.activeEnd.toISOString().split('T')[0]);*/
@@ -58,11 +69,11 @@ const Events = () => {
             setSelectedEventPlain(null);
         }
     }
-//for deleting all recurring events
+//for deleting all recurring eventsForView
     const handleDeleteAll = async () => {
-        if (window.confirm("Are you sure you want to delete all similar events?")&&selectedEvent) {
+        if (window.confirm("Are you sure you want to delete all similar eventsForView?")&&selectedEvent) {
             await recurringEventsService.deleteEvent(selectedEvent.extendedProps.eventId);
-            // Refresh events
+            // Refresh eventsForView
             const calendarApi = calendarRef.current.getApi();
             const view = calendarApi.view;
             await fetchEvents(view.activeStart.toISOString().split('T')[0], view.activeEnd.toISOString().split('T')[0]);
@@ -72,35 +83,50 @@ const Events = () => {
         }
     }
 
+    const handleUpdateDialog = async () => {
+        setInitialValueForEventForm(selectedEventPlain)
+        setFormIsVisible(true);
+        setEventWindowOpen(false);
+    }
+
+    const handleCancelForm = () => {
+        setFormIsVisible(false);
+        setInitialValueForEventForm(null);
+    }
+
+
     const fetchEvents = async (start, end) => {
         console.log('fetchEvents')
         try {
             let events = await eventsService.getAllEvents(start, end);
-            console.log("events", events);
+            setEvents(events);
+            // mb I need to put init eventsForView into store for evetn usage, to find original obj for specific event
+            //colored eventsForView use only for displaying
+            console.log("eventsForView in initial state", events);
             console.log("I want to see users fields", user);
-        const coloredEvents = events.map(event => ({
+            const coloredEvents = events.map(event => ({
 
-            id: event.id,
-            title: event.event.title,
-            start: event.start,
-            end: event.end,
-            extendedProps: {
-                eventId: event.eventId,
-                groups: event.event.groups.map((group) => group.name).join(", "),
-                description: event.description,
-                uniform: event.uniform,
-                isRecurring: event.event.isRecurring,
-                coachId: event.coachId,
-                coach: event.coach.firstName + ' ' + event.coach.lastName
-            },
-            display: "block"
-    }));
-        console.log("events", coloredEvents);
-        setEvents(coloredEvents);
-    } catch (err) {
-        console.log(err);
+                id: event.id,
+                title: event.event.title,
+                start: event.start,
+                end: event.end,
+                extendedProps: {
+                    eventId: event.eventId,
+                    groups: event.event.groups.map((group) => group.name).join(", "),
+                    description: event.description,
+                    uniform: event.uniform,
+                    isRecurring: event.event.isRecurring,
+                    coachId: event.coachId,
+                    coach: event.coach.firstName + ' ' + event.coach.lastName
+                },
+                display: "block"
+            }));
+            console.log("eventsForView after altering for full calendar", coloredEvents);
+            setEventsForView(coloredEvents);
+        } catch (err) {
+            console.log(err);
+        }
     }
-}
 
     const showEvent = (arg)=>  {
         const event = arg.event.extendedProps;
@@ -129,10 +155,11 @@ const Events = () => {
     }
     const handleEventCreated = async () => {
         setFormIsVisible(false);
-        // Re-fetch events for current view
+        // Re-fetch eventsForView for current view
         const calendarApi = calendarRef.current.getApi();
         const view = calendarApi.view;
         await fetchEvents(view.activeStart.toISOString().split('T')[0], view.activeEnd.toISOString().split('T')[0]);
+        setInitialValueForEventForm(null)
     };
 
     const handleDatesSet = async (info) => {
@@ -151,7 +178,7 @@ const Events = () => {
                 add new event
             </Button>:null}
             {user&&user.group?<Button variant="contained" color="primary" onClick={()=>setIsEventsFiltered(!isEventsFiltered)} style={{ marginBottom: '1rem' }}>
-                {!isEventsFiltered?'show my group events':'show all club events'}
+                {!isEventsFiltered?'show my group eventsForView':'show all club eventsForView'}
             </Button>: null}
 
             {selectedEvent&&<Event event={selectedEventPlain}
@@ -159,6 +186,7 @@ const Events = () => {
                                    setOpen={setEventWindowOpen}
                                    handleDelete={handleDelete}
                                    handleDeleteAll={handleDeleteAll}
+                                   handleUpdate={handleUpdateDialog}
             />}
             {/*<Dialog
                 open={eventWindowOpen}
@@ -182,7 +210,9 @@ const Events = () => {
                 </DialogActions>
             </Dialog>*/}
 
-            {formIsVisible && <EventForm onEventCreated={handleEventCreated} onCancel={() => setFormIsVisible(false)}/>}
+            {formIsVisible && <EventForm initValues={initialValueForEventForm}
+                                         onEventCreated={handleEventCreated}
+                                         onCancel={handleCancelForm}/>}
             <FullCalendar
                 plugins={[ dayGridPlugin, timeGridPlugin, interactionPlugin ]}
                 ref={calendarRef}
@@ -192,7 +222,7 @@ const Events = () => {
                     center: 'title',
                     end: 'dayGridMonth,timeGridWeek,timeGridDay'
                 }}
-                events={!isEventsFiltered?events:events.filter(event => event.extendedProps.groups.includes(user.group.name))}
+                events={!isEventsFiltered?eventsForView:eventsForView.filter(event => event.extendedProps.groups.includes(user.group.name))}
                 eventClick={openEventFunctions}
                 datesSet={handleDatesSet}
                 eventContent={showEvent}
