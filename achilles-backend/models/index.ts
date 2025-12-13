@@ -3,8 +3,8 @@ import Plan from "./plan";
 import Role from "./role";
 import User from "./user";
 import Achievement from "./achievement";
+import Schedule from "./schedule";
 import Event from "./event";
-import EventEntry from "./eventEntry";
 
 
 Event.belongsToMany(Group, { through: 'event_groups', as: 'groups'});
@@ -23,20 +23,20 @@ Achievement.belongsTo(User, {foreignKey: 'userId', as: 'user'});
 User.belongsToMany(Role, {through: 'user_roles', foreignKey: 'user_id', as: 'roles'});
 Role.belongsToMany(User, {through: 'user_roles', foreignKey: 'role_id', as: 'users'});
 
-/*Event.belongsToMany(Group, { through: 'EventGroups', as: 'groups', foreignKey: 'eventId' });
-Group.belongsToMany(Event, { through: 'EventGroups', as: 'events', foreignKey: 'groupId' });*/
-EventEntry.belongsTo(User, { foreignKey: 'coach_id', as: 'coach'});
+/*Schedule.belongsToMany(Group, { through: 'EventGroups', as: 'groups', foreignKey: 'eventId' });
+Group.belongsToMany(Schedule, { through: 'EventGroups', as: 'events', foreignKey: 'groupId' });*/
+Event.belongsTo(User, { foreignKey: 'coachId', as: 'coach'});
 
 
 
 
-User.hasMany(EventEntry, {sourceKey: 'id', foreignKey: 'coach_id', as : 'events' });
+User.hasMany(Event, {sourceKey: 'id', foreignKey: 'coachId', as : 'events' });
 
 
 
 
 
-Event.hasMany(EventEntry, { as: 'event_entries', foreignKey: 'eventId'});
-EventEntry.belongsTo(Event, { as: 'event', foreignKey: 'eventId' });
+Schedule.hasMany(Event, { as: 'events', foreignKey: 'scheduleId'});
+Event.belongsTo(Schedule, { as: 'schedule', foreignKey: 'scheduleId' });
 
-export {User, Role, Achievement, Event, Plan, Group, EventEntry}
+export {User, Role, Achievement, Schedule, Plan, Group, Event}

@@ -8,24 +8,20 @@ import eventsService from "../services/events.js";
 import {initializeUsers} from "../reducers/usersReducer.js";
 import {selectUsersByRole} from "../selectors/usersSelectors.js";
 
-const EventForm = ({initValues , onEventCreated, onCancel}) => {
-    const [title, setTitle] = useState(initValues.event.title || '');
-    const [eventType, setEventType] = useState(initValues.event.isRecurring ? 'recurring' : 'one-time');
-    const [eventDate, setEventDate] = useState(dayjs(initValues.eventDate) || dayjs());
-    const [startEventTime, setStartEventTime] = useState(dayjs(initValues.startEventTime) || dayjs());
-    const [endEventTime, setEndEventTime] = useState(dayjs(initValues.endEventTime) || dayjs());
+const EventForm = ({initValues, isEvent, onEventCreated, onCancel}) => {
+    const [title, setTitle] = useState(initValues?.event.title || '');
+    const [eventType, setEventType] = useState(initValues?.event.scheduleId ? 'recurring' : 'one-time');
+    const [eventDate, setEventDate] = useState(dayjs(initValues?.eventDate) || dayjs());
+    const [startEventTime, setStartEventTime] = useState(dayjs(initValues?.startEventTime) || dayjs());
+    const [endEventTime, setEndEventTime] = useState(dayjs(initValues?.endEventTime) || dayjs());
     const [recurringDays, setRecurringDays] = useState([]);
-    const [recurringStartDate, setRecurringStartDate] = useState(dayjs(initValues.recurringStartDate) || dayjs());
-    const [recurringEndDate, setRecurringEndDate] = useState(dayjs(initValues.recurringEndDate) || dayjs());
-    const [selectedGroups, setSelectedGroups] = useState(initValues.event.groups.map(group=>group.id) || []);
-    const [coach, setCoach] = useState(initValues.coachId || '');
-    const [uniform, setUniform] = useState(initValues.uniform||'Gi');
-    const [description, setDescription] = useState(initValues.description || '');
+    const [recurringStartDate, setRecurringStartDate] = useState(dayjs(initValues?.recurringStartDate) || dayjs());
+    const [recurringEndDate, setRecurringEndDate] = useState(dayjs(initValues?.recurringEndDate) || dayjs());
+    const [selectedGroups, setSelectedGroups] = useState(initValues?.event.groups.map(group=>group.id) || []);
+    const [coach, setCoach] = useState(initValues?.coachId || '');
+    const [uniform, setUniform] = useState(initValues?.uniform||'Gi');
+    const [description, setDescription] = useState(initValues?.description || '');
 
-    const initialState = {
-        title: '',
-    }
-    console.log('I see init event', initValues)
     const uniforms = ['Gi', 'No-Gi', 'Gi & No-Gi'];
 
     const groups = useSelector(state => state.groups);
@@ -46,22 +42,18 @@ const EventForm = ({initValues , onEventCreated, onCancel}) => {
             eventType,
             coach,
             selectedGroups,
+            description,
+            uniform,
+            startTime: startEventTime.format('HH:mm'),
+            endTime: endEventTime.format('HH:mm'),
             timeZone:  Intl.DateTimeFormat().resolvedOptions().timeZone
         }
-        if (eventType === 'one-time') {
-            newEvent.isRecurring = false;
+        if (isEvent) {
             newEvent.date = eventDate;
-            newEvent.startTime = startEventTime.format('HH:mm');
-            newEvent.endTime = endEventTime.format('HH:mm');
-            newEvent.uniform = uniform;
-            newEvent.description = description;
-        } else if (eventType === 'recurring') {
-            newEvent.isRecurring = true;
+        } else {
             newEvent.recurringDays = recurringDays;
             newEvent.recurringStartDate = recurringStartDate;
             newEvent.recurringEndDate = recurringEndDate;
-            newEvent.startTime = startEventTime.format('HH:mm');
-            newEvent.endTime = endEventTime.format('HH:mm');
         }
         await eventsService.postEvent(newEvent);
         onEventCreated();
@@ -72,6 +64,7 @@ const EventForm = ({initValues , onEventCreated, onCancel}) => {
             <h2>Create Training Event</h2>
             <form onSubmit={handleSubmit}>
                 <TextField
+
                     label="Title"
                     name="title"
                     value={title}
@@ -83,7 +76,7 @@ const EventForm = ({initValues , onEventCreated, onCancel}) => {
                     required
                     style={{ marginBottom: '1rem' }}
                 />
-                <FormControl fullWidth style={{ marginBottom: '1rem' }}>
+{/*                <FormControl fullWidth style={{ marginBottom: '1rem' }}>
                     <InputLabel>Event Type</InputLabel>
                     <Select
                         value={eventType}
@@ -92,7 +85,7 @@ const EventForm = ({initValues , onEventCreated, onCancel}) => {
                         <MenuItem value="one-time">One-Time Event</MenuItem>
                         <MenuItem value="recurring">Recurring Event</MenuItem>
                     </Select>
-                </FormControl>
+                </FormControl>*/}
                 <FormControl fullWidth style={{ marginBottom: '1rem' }}>
                     <InputLabel>Coach</InputLabel>
                     <Select
@@ -120,18 +113,28 @@ const EventForm = ({initValues , onEventCreated, onCancel}) => {
                         ))}
                     </Select>
                 </FormControl>
-                {eventType === 'one-time' ? (
+                <FormControl fullWidth style={{ marginBottom: '1rem' }}>
+                    <InputLabel>Uniform</InputLabel>
+                    <Select value={uniform} onChange={(e) => setUniform(e.target.value)}>
+                        {uniforms.map((uni) => (
+                            <MenuItem key={uni} value={uni}>
+                                {uni}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <TextField
+                    label="Description"
+                    type="text"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    fullWidth
+                    multiline
+                    rows={3}
+                ></TextField>
+                {isEvent ? (
                     <Stack spacing={2} sx={{ minWidth: 305 }}>
-                        <FormControl fullWidth style={{ marginBottom: '1rem' }}>
-                            <InputLabel>Uniform</InputLabel>
-                            <Select value={uniform} onChange={(e) => setUniform(e.target.value)}>
-                                {uniforms.map((uni) => (
-                                <MenuItem key={uni} value={uni}>
-                                    {uni}
-                                </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+
                         <DatePicker
                             label="start"
                             required
@@ -139,7 +142,7 @@ const EventForm = ({initValues , onEventCreated, onCancel}) => {
                             onChange={(newValue) =>setEventDate(newValue)}
                         />
 
-                        <TimePicker
+{/*                        <TimePicker
                             label="start"
                             required
                             value={startEventTime}
@@ -150,17 +153,9 @@ const EventForm = ({initValues , onEventCreated, onCancel}) => {
                             label="end"
                             value={endEventTime}
                             onChange={(newValue) =>setEndEventTime(newValue)}
-                        />
+                        />*/}
 
-                        <TextField
-                            label="Description"
-                            type="text"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            fullWidth
-                            multiline
-                            rows={3}
-                        ></TextField>
+
                     </Stack>
                 ) : (
                     <Stack spacing={2} sx={{ minWidth: 305 }}>
@@ -195,7 +190,7 @@ const EventForm = ({initValues , onEventCreated, onCancel}) => {
                             onChange={(newValue) =>setRecurringEndDate(newValue)}
                         />
 
-                        <TimePicker
+{/*                        <TimePicker
                             label="start"
                             required
                             value={startEventTime}
@@ -206,9 +201,21 @@ const EventForm = ({initValues , onEventCreated, onCancel}) => {
                             label="end"
                             value={endEventTime}
                             onChange={(newValue) =>setEndEventTime(newValue)}
-                        />
+                        />*/}
                     </Stack>
                 )}
+                <TimePicker
+                    label="start"
+                    required
+                    value={startEventTime}
+                    onChange={(newValue) => setStartEventTime(newValue)}
+                />
+
+                <TimePicker
+                    label="end"
+                    value={endEventTime}
+                    onChange={(newValue) => setEndEventTime(newValue)}
+                />
                 <Button type="submit" variant="contained" color="primary">
                     Create Event
                 </Button>

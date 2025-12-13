@@ -1,5 +1,6 @@
 import axios from "./index.js";
-const baseURL = "http://localhost:3003/api/eventEntries/";
+const baseURL = "http://localhost:3003/api/events/";
+const baseURL2 = "http://localhost:3003/api/schedules/";
 
 const getAllEvents = async (start, end) => {
     const res = await axios.get(baseURL, {
@@ -9,8 +10,18 @@ const getAllEvents = async (start, end) => {
 }
 
 const postEvent = async (event) => {
-    const response = await axios.post(baseURL, event);
-    return response.data;
+    if(event.recurringDays){
+        console.log('But I am here');
+        const response = await axios.post(baseURL2, event);
+        console.log('But I am here', response.data);
+        return response.data;
+    } else {
+        console.log('Ineed to post single event');
+        const response = await axios.post(baseURL, event);
+
+        return response.data;
+    }
+
 }
 
 const deleteEvent = async (id) => {

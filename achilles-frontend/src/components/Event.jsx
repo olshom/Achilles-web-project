@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import DialogActions from "@mui/material/DialogActions";
 import {Button} from "@mui/material";
 
-const Event=({ event, open, setOpen, handleDelete, handleDeleteAll, handleUpdate }) => {
+const Event=({ event, open, setOpen, handleDelete, handleDeleteAll, handleUpdateOneEvent }) => {
     return (
         <Dialog
             open={open}
@@ -26,7 +26,7 @@ const Event=({ event, open, setOpen, handleDelete, handleDeleteAll, handleUpdate
                 <Button onClick={handleDelete}>Delete</Button>
                 <p>To preserve past training history, only future scheduled classes can be deleted.</p>
                 {event.isRecurring&&<Button onClick={handleDeleteAll}>Delete all similar events</Button> }
-                <Button onClick={handleUpdate}>Update current event</Button>
+                <Button onClick={handleUpdateOneEvent}>Update current event</Button>
                 {/*                {event.isRecurring&&<Button onClick={handleUpdateAll}>Update all similar events</Button> }*/}
             </DialogContent>
         </Dialog>
