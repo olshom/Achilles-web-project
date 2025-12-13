@@ -9,15 +9,17 @@ import {initializeUsers} from "../reducers/usersReducer.js";
 import {selectUsersByRole} from "../selectors/usersSelectors.js";
 
 const EventForm = ({initValues, isEvent, onEventCreated, onCancel}) => {
-    const [title, setTitle] = useState(initValues?.event.title || '');
-    const [eventType, setEventType] = useState(initValues?.event.scheduleId ? 'recurring' : 'one-time');
-    const [eventDate, setEventDate] = useState(dayjs(initValues?.eventDate) || dayjs());
-    const [startEventTime, setStartEventTime] = useState(dayjs(initValues?.startEventTime) || dayjs());
-    const [endEventTime, setEndEventTime] = useState(dayjs(initValues?.endEventTime) || dayjs());
+    const [title, setTitle] = useState(initValues?.title || '');
+/*
+    const [eventType, setEventType] = useState(isEvent ? 'recurring' : 'one-time');
+*/
+    const [eventDate, setEventDate] = useState(dayjs(initValues?.start) || dayjs());
+    const [startEventTime, setStartEventTime] = useState(dayjs(initValues?.start) || dayjs());
+    const [endEventTime, setEndEventTime] = useState(dayjs(initValues?.end) || dayjs());
     const [recurringDays, setRecurringDays] = useState([]);
-    const [recurringStartDate, setRecurringStartDate] = useState(dayjs(initValues?.recurringStartDate) || dayjs());
-    const [recurringEndDate, setRecurringEndDate] = useState(dayjs(initValues?.recurringEndDate) || dayjs());
-    const [selectedGroups, setSelectedGroups] = useState(initValues?.event.groups.map(group=>group.id) || []);
+    const [recurringStartDate, setRecurringStartDate] = useState(dayjs());
+    const [recurringEndDate, setRecurringEndDate] = useState(dayjs());
+    const [selectedGroups, setSelectedGroups] = useState(initValues?.groups.map(group=>group.id) || []);
     const [coach, setCoach] = useState(initValues?.coachId || '');
     const [uniform, setUniform] = useState(initValues?.uniform||'Gi');
     const [description, setDescription] = useState(initValues?.description || '');
@@ -39,7 +41,6 @@ const EventForm = ({initValues, isEvent, onEventCreated, onCancel}) => {
         event.preventDefault();
         const newEvent = {
             title,
-            eventType,
             coach,
             selectedGroups,
             description,
@@ -59,10 +60,28 @@ const EventForm = ({initValues, isEvent, onEventCreated, onCancel}) => {
         onEventCreated();
     }
 
+    const handleSubmitUpdate = async (event) => {
+        event.preventDefault();
+        const updatedEvent = {
+            title,
+            coach,
+            selectedGroups,
+            description,
+            uniform,
+            startTime: startEventTime.format('HH:mm'),
+            endTime: endEventTime.format('HH:mm'),
+            timeZone:  Intl.DateTimeFormat().resolvedOptions().timeZone,
+            date: eventDate
+        }
+
+        await eventsService.updateEvent(initValues.id, updatedEvent);
+        onEventCreated();
+    }
+
     return (
         <Paper style={{ padding: '2rem' }}>
             <h2>Create Training Event</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={initValues? handleSubmitUpdate:handleSubmit}>
                 <TextField
 
                     label="Title"
@@ -141,21 +160,6 @@ const EventForm = ({initValues, isEvent, onEventCreated, onCancel}) => {
                             value={eventDate}
                             onChange={(newValue) =>setEventDate(newValue)}
                         />
-
-{/*                        <TimePicker
-                            label="start"
-                            required
-                            value={startEventTime}
-                            onChange={(newValue) =>setStartEventTime(newValue)}
-                        />
-
-                        <TimePicker
-                            label="end"
-                            value={endEventTime}
-                            onChange={(newValue) =>setEndEventTime(newValue)}
-                        />*/}
-
-
                     </Stack>
                 ) : (
                     <Stack spacing={2} sx={{ minWidth: 305 }}>
@@ -189,19 +193,6 @@ const EventForm = ({initValues, isEvent, onEventCreated, onCancel}) => {
                             value={recurringEndDate}
                             onChange={(newValue) =>setRecurringEndDate(newValue)}
                         />
-
-{/*                        <TimePicker
-                            label="start"
-                            required
-                            value={startEventTime}
-                            onChange={(newValue) =>setStartEventTime(newValue)}
-                        />
-
-                        <TimePicker
-                            label="end"
-                            value={endEventTime}
-                            onChange={(newValue) =>setEndEventTime(newValue)}
-                        />*/}
                     </Stack>
                 )}
                 <TimePicker
@@ -217,7 +208,8 @@ const EventForm = ({initValues, isEvent, onEventCreated, onCancel}) => {
                     onChange={(newValue) => setEndEventTime(newValue)}
                 />
                 <Button type="submit" variant="contained" color="primary">
-                    Create Event
+                    {initValues ? 'Update Event' : 'Create Event'}
+
                 </Button>
                 <Button variant="outlined" color="secondary" onClick={onCancel}>
                     cancel

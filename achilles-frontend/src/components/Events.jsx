@@ -55,16 +55,16 @@ const Events = () => {
         });*/
         setEventWindowOpen(true);
     }
-/*//it looks like it can be one function for deleting one event
+//it looks like it can be one function for deleting one event
     const handleDelete = async () => {
         if (window.confirm("Are you sure you want to delete this event?")&&selectedEvent) {
             await eventsService.deleteEvent(selectedEvent.id);
 
             selectedEvent.remove();
             // Refresh eventsForView
-/!*            const calendarApi = calendarRef.current.getApi();
+            const calendarApi = calendarRef.current.getApi();
             const view = calendarApi.view;
-            await fetchEvents(view.activeStart.toISOString().split('T')[0], view.activeEnd.toISOString().split('T')[0]);*!/
+            await fetchEvents(view.activeStart.toISOString().split('T')[0], view.activeEnd.toISOString().split('T')[0]);
             setEventWindowOpen(false);
             setSelectedEvent(null);
             setSelectedEventPlain(null);
@@ -82,7 +82,7 @@ const Events = () => {
             setSelectedEvent(null);
             setSelectedEventPlain(null);
         }
-    }*/
+    }
 
     const handleEventCreate = () => {
         setFormIsVisible(true);
@@ -96,19 +96,17 @@ const Events = () => {
 //        setInitialValueForEventForm({isSchedule:true});
     }
 
-/*    const handleCallUpdateEventEntry = async () => {
+   const handleUpdateEvent = async () => {
         setInitialValueForEventForm(selectedEventPlain)
         setFormIsVisible(true);
         setEventWindowOpen(false);
-        setIsEventEntry(true);
+        setIsEvent(true);
     }
 
-    const handleCallUpdateEvent = async () => {
-        setInitialValueForEventForm(selectedEventPlain)
-        setFormIsVisible(true);
-        setEventWindowOpen(false);
-        setIsEventEntry(false);
-    }*/
+    const handleScheduleUpdate = () => {
+        //navigate to schedule management page
+        alert('to be implemented');
+    }
 
     const handleCancelForm = async () => {
         setIsEvent(false);
@@ -117,7 +115,6 @@ const Events = () => {
 
     }
 
-
     const fetchEvents = async (start, end) => {
 /*        console.log('fetchEvents')*/
         try {
@@ -125,10 +122,9 @@ const Events = () => {
             setEvents(events);
             // mb I need to put init eventsForView into store for evetn usage, to find original obj for specific event
             //colored eventsForView use only for displaying
-/*            console.log("eventsForView in initial state", events);
-            console.log("I want to see users fields", user);*/
+            console.log("eventsForView in initial state", events);
+            console.log("I want to see users fields", user);
             const coloredEvents = events.map(event => ({
-
                 id: event.id,
                 title: event.title,
                 start: event.start,
@@ -175,6 +171,7 @@ const Events = () => {
             `
         };
     }
+
     const handleEventCreated = async () => {
         setFormIsVisible(false);
         setInitialValueForEventForm(null)
@@ -210,19 +207,25 @@ const Events = () => {
                     >
                         add new schedule
                     </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleScheduleUpdate}
+                        style={{marginBottom: '1rem'}}
+                    >
+                        update schedule
+                    </Button>
                 </div> : null}
             {user&&user.group?<Button variant="contained" color="primary" onClick={()=>setIsEventsFiltered(!isEventsFiltered)} style={{ marginBottom: '1rem' }}>
                 {!isEventsFiltered?'show my group eventsForView':'show all club eventsForView'}
             </Button>: null}
 
-{/*            {selectedEvent&&<Event event={selectedEventPlain}
+            {selectedEvent&&<Event event={selectedEventPlain}
                                    open={eventWindowOpen}
                                    setOpen={setEventWindowOpen}
                                    handleDelete={handleDelete}
-                                   handleDeleteAll={handleDeleteAll}
-                                   handleUpdateOneEvent={handleCallUpdateEventEntry}
-                                   handleUpdateRecurrentEvent={handleCallUpdateEvent}
-            />}*/}
+                                   handleUpdateOneEvent={handleUpdateEvent}
+            />}
             {/*<Dialog
                 open={eventWindowOpen}
                 onClose={() => setEventWindowOpen(false)}

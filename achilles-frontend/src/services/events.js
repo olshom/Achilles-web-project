@@ -21,7 +21,11 @@ const postEvent = async (event) => {
 
         return response.data;
     }
+}
 
+const updateEvent = async (id, event) => {
+    const response = await axios.put(`${baseURL}${id}`, event);
+    return response.data;
 }
 
 const deleteEvent = async (id) => {
@@ -29,4 +33,4 @@ const deleteEvent = async (id) => {
     return response.data;
 }
 
-export default {getAllEvents, postEvent, deleteEvent}
+export default {getAllEvents, postEvent, deleteEvent, updateEvent}
