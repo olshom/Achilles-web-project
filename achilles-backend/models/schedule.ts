@@ -3,9 +3,10 @@ import {
     DataTypes,
     InferAttributes,
     InferCreationAttributes,
-    CreationOptional,
+    CreationOptional, BelongsToManySetAssociationsMixin,
 } from 'sequelize';
 import { sequelize } from '../util/db';
+import Group from "./group";
 
 
 //it will be a schedule template for event entries
@@ -23,6 +24,8 @@ class Schedule extends Model<InferAttributes<Schedule>, InferCreationAttributes<
 
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
+    declare setGroupsForEvent: BelongsToManySetAssociationsMixin<Group, number>;
+    declare getGroupsForEvent: () => Promise<Group[]>;
 
 
 //    declare createEventEntry: HasManyCreateAssociationMixin<Event,'eventId'>;

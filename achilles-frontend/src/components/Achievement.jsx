@@ -19,6 +19,7 @@ import {useDispatch, useSelector} from "react-redux";
 const Achievement = () => {
     const id = useParams().id
     const [achievement, setAchievement] = useState(null);
+    const [rolePath, setRolePath] = useState('users');
     const [editEnabled, setEditEnabled] = useState(false);
     const [type, setType] = useState('');
     const [description, setDescription] = useState('');
@@ -30,8 +31,13 @@ const Achievement = () => {
 
     const fetchAchievement = async () => {
         try {
-            const achievement = await achievementService.getAchievementById(id);
-            setAchievement(achievement);
+            const achievementFromBackEnd = await achievementService.getAchievementById(id);
+            setAchievement(achievementFromBackEnd);
+            console.log('achievement', achievementFromBackEnd);
+            if (achievementFromBackEnd.user.roles.map(r=>r.name).includes('coach')) {setRolePath('coaches');}
+            if (achievementFromBackEnd.user.roles.map(r=>r.name).includes('member')) {setRolePath('members');}
+
+            console.log('path', rolePath);
             setType(achievement.type);
             setDescription(achievement.description);
             setDate(dayjs(achievement.date));
@@ -148,7 +154,7 @@ const Achievement = () => {
                             color="primary"
                             variant="contained"
                             component={Link}
-                            to={`/users/${achievement.user.id}`}
+                            to={`/${rolePath}/${achievement.user.id}`}
                         >
                             View User
                         </Button>

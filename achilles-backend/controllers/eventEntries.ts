@@ -1,6 +1,6 @@
 /*
 import express from "express";
-import {Schedule, Group, User} from "../models";
+import {ScheduleWDateUpdate, Group, User} from "../models";
 import { Op } from 'sequelize';
 
 
@@ -13,7 +13,7 @@ const router = express.Router();
 router.post("/", userExtractor, isAdmin, async (req, res) => {
     if (req.body.title && req.body.isRecurring === false ) {
     const {title, isRecurring, selectedGroups, uniform, date, startTime, endTime, timeZone} = req.body;
-        const newEvent = await Schedule.create({
+        const newEvent = await ScheduleWDateUpdate.create({
             title,
             isRecurring
         })
@@ -32,7 +32,7 @@ router.post("/", userExtractor, isAdmin, async (req, res) => {
                 model: User,
                 as: 'coach',
             }, {
-                model: Schedule,
+                model: ScheduleWDateUpdate,
                 as: 'event',
                 include: [{
                     model: Group,
@@ -46,7 +46,7 @@ router.post("/", userExtractor, isAdmin, async (req, res) => {
         return res.status(201).json(fullEvent);
     } else if(req.body.isRecurring ) {
         const {title, isRecurring, selectedGroups, uniform, recurringDays, recurringStartDate, recurringEndDate, startTime, endTime, timeZone} = req.body;
-        const newEvent = await Schedule.create({
+        const newEvent = await ScheduleWDateUpdate.create({
             title,
             isRecurring
         });
@@ -65,7 +65,7 @@ router.post("/", userExtractor, isAdmin, async (req, res) => {
             const eventDate = new Date(recurringStartDate);
             eventDate.setDate(eventDate.getDate() + diff);
             while (eventDate <= endDate) {
-                console.log('Schedule date:', eventDate);
+                console.log('ScheduleWDateUpdate date:', eventDate);
                 await Event.create({
                     eventId: newEvent.id,
                     uniform,
@@ -85,7 +85,7 @@ router.post("/", userExtractor, isAdmin, async (req, res) => {
                     model: User,
                     as: 'coach',
                 }, {
-                    model: Schedule,
+                    model: ScheduleWDateUpdate,
                     as: 'event',
                     include: [{
                         model: Group,
@@ -117,7 +117,7 @@ router.get("/", async (req, res) => {
                 model: User,
                 as: 'coach'
             }, {
-                model: Schedule,
+                model: ScheduleWDateUpdate,
                 as: 'event',
                 include: [{
                     model: Group,
@@ -151,11 +151,11 @@ router.delete("/:id", async (req: express.Request, res: express.Response) => {
     const {id} = req.params;
     const eventEntry = await Event.findByPk(id)
     if (!eventEntry) {
-        res.status(404).json({error: 'Schedule not found'})
+        res.status(404).json({error: 'ScheduleWDateUpdate not found'})
     }
-    const event = await Schedule.findByPk(eventEntry!.eventId);
+    const event = await ScheduleWDateUpdate.findByPk(eventEntry!.eventId);
     if (!event) {
-        res.status(404).json({error: 'Schedule not found'})
+        res.status(404).json({error: 'ScheduleWDateUpdate not found'})
     }
     if (event!.isRecurring) {
         await Event.destroy({where: {id}})
@@ -163,7 +163,7 @@ router.delete("/:id", async (req: express.Request, res: express.Response) => {
     } else if (!event!.isRecurring) {
         await event!.setGroups([]);
         await Event.destroy({where: {id}})
-        await Schedule.destroy({where: {id: event!.id}})
+        await ScheduleWDateUpdate.destroy({where: {id: event!.id}})
         res.status(204).end()
     }
 })

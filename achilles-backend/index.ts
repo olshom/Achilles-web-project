@@ -4,13 +4,14 @@ app.use(express.json());
 import connectToDatabase from "./util/db";
 import usersRouter from "./controllers/users";
 import loginRouter from "./controllers/login";
-import schedulesRouter from "./controllers/schedules";
+
 import signupRouter from "./controllers/signup";
 import achievementsRouter from "./controllers/achievements";
 import rolesRouter from "./controllers/roles";
 import groupsRouter from "./controllers/groups";
 import plansRouter from "./controllers/plans";
 import eventsRouter from "./controllers/events";
+import schedulesRouter from "./controllers/schedules";
 
 const PORT = process.env.PORT || 3003;
 

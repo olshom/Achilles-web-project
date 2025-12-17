@@ -23,20 +23,13 @@ Achievement.belongsTo(User, {foreignKey: 'userId', as: 'user'});
 User.belongsToMany(Role, {through: 'user_roles', foreignKey: 'user_id', as: 'roles'});
 Role.belongsToMany(User, {through: 'user_roles', foreignKey: 'role_id', as: 'users'});
 
-/*Schedule.belongsToMany(Group, { through: 'EventGroups', as: 'groups', foreignKey: 'eventId' });
-Group.belongsToMany(Schedule, { through: 'EventGroups', as: 'events', foreignKey: 'groupId' });*/
+Schedule.belongsToMany(Group, { through: 'schedule_groups', as: 'groupsForEvent', foreignKey: 'schedule_id'});
+Group.belongsToMany(Schedule, { through: 'schedule_groups', as: 'schedules', foreignKey: 'group_id'});
+
 Event.belongsTo(User, { foreignKey: 'coachId', as: 'coach'});
-
-
-
-
 User.hasMany(Event, {sourceKey: 'id', foreignKey: 'coachId', as : 'events' });
-
-
-
-
 
 Schedule.hasMany(Event, { as: 'events', foreignKey: 'scheduleId'});
 Event.belongsTo(Schedule, { as: 'schedule', foreignKey: 'scheduleId' });
 
-export {User, Role, Achievement, Schedule, Plan, Group, Event}
+export {User, Role, Achievement,  Plan, Group, Event, Schedule}

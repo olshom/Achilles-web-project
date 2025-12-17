@@ -1,5 +1,5 @@
 import express from 'express';
-import {Achievement, User} from "../models";
+import {Achievement, Role, User} from "../models";
 import {isAdmin, userExtractor} from "../util/middleware";
 
 const router = express.Router();
@@ -14,7 +14,7 @@ router.get('/', async (_req, res) => {
                 model: User,
                 as: 'user',
                 attributes: {
-                    exclude: ['password'],
+                    exclude: ['password']
                 }
             }
         ]
@@ -58,7 +58,17 @@ router.get('/:id', async (req, res) => {
                 as: 'user',
                 attributes: {
                     exclude: ['password'],
-                }
+                },
+                include: [
+                    {
+                        model: Role,
+                        attributes: ['id', 'name'],
+                        as: 'roles',
+                        through: {
+                            attributes: [],
+                        }
+                    }
+                ]
             }
         ]
     })

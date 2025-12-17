@@ -16,7 +16,7 @@ class Event extends Model<InferAttributes<Event>, InferCreationAttributes<Event>
     declare title: string;
     declare scheduleId: CreationOptional<ForeignKey<Schedule['id']> | null>;
     declare schedule?: NonAttribute<Schedule>;
-    declare uniform: CreationOptional<'Gi' | 'No Gi' | 'Gi + No Gi'>;
+    declare uniform: CreationOptional<string>;
     declare start: Date;
     declare end: Date;
     declare description: CreationOptional<string>;

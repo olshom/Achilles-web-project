@@ -62,18 +62,18 @@ router.post("/", userExtractor, isAdmin, async (req, res) => {
     return res.status(201).json(newEvent);
 })
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", userExtractor, isAdmin, async (req, res) => {
     const {id} = req.params;
     const event = await Event.findByPk(id);
     if (!event) {
-        return res.status(404).json({error: "Schedule not found"});
+        return res.status(404).json({error: "ScheduleWDateUpdate not found"});
     }
     await event.setGroups([]);
     await event.destroy();
     return res.status(204).end();
 })
 
-router.put("/:id", async (req, res) => {
+router.put("/:id",userExtractor, isAdmin, async (req, res) => {
     const {id} = req.params;
     const {title, coach, selectedGroups, description, uniform, date, startTime, endTime, timeZone} = req.body;
     const event = await Event.findByPk(id);

@@ -6,9 +6,7 @@ import {useEffect, useState} from "react";
 import {Link, Navigate, Route, Routes, useMatch} from "react-router-dom";
 import {useSelector, useDispatch} from "react-redux";
 import {setUser} from "./reducers/userReducer.js";
-import Users from "./components/Users.jsx"
 import Achievements from "./components/Achievements.jsx";
-import {initializeUsers} from "./reducers/usersReducer.js";
 import User from "./components/User.jsx";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -16,6 +14,7 @@ import Achievement from "./components/Achievement.jsx";
 import Events from "./components/Events.jsx";
 import UsersPage from "./components/UsersPage.jsx";
 import CoachesPage from "./components/CoachesPage.jsx";
+import SchedulesPage from "./components/SchedulesPage.jsx";
 
 function App() {
     const user = useSelector(({ user }) => user);
@@ -97,6 +96,7 @@ function App() {
                         <Route path="/coaches/:id" element={user ? <User user={userOfClub}/> : <Navigate to="/login" replace />}/>
                         <Route path="/achievements" element={user ? <Achievements/> : <Navigate to="/login" replace />}/>
                         <Route path="/achievements/:id" element={user ? <Achievement achievementId={achievementId}/> : <Navigate to="/login" replace />}/>
+                        <Route path="/schedules" element={user.roles.includes('admin') ? <SchedulesPage/> : <Navigate to="/events" replace />}/>
                     </Routes>
                 </Container>
         </LocalizationProvider>

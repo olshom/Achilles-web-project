@@ -2,14 +2,13 @@ import {Button} from "@mui/material";
 import EventForm from "./EventForm.jsx";
 import {useEffect, useRef, useState} from "react";
 import {useSelector, useDispatch} from "react-redux";
+import {Link} from "react-router-dom";
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import eventsService from "../services/events.js";
-import recurringEventsService from "../services/recurringEvents.js";
 import Event from "./Event.jsx";
-import {deleteEventAction} from "../reducers/eventsReducer.js";
 
 
 const Events = () => {
@@ -23,7 +22,6 @@ const Events = () => {
     const [initialValueForEventForm, setInitialValueForEventForm] = useState(null);
     const [isEvent, setIsEvent] = useState(false);
 
-    const dispatch = useDispatch();
     const calendarRef = useRef(null);
     const user = useSelector(state => state.user);
     console.log('user', user)
@@ -42,17 +40,6 @@ const Events = () => {
         setSelectedEvent(info.event);
         setSelectedEventPlain(eventPlainObj);
         console.log('selectedEventPlain', eventPlainObj);
-/*        setSelectedEventPlain({
-            id: info.event.id,
-            title: info.event.title,
-            start: info.event.start,
-            end: info.event.end,
-            description: info.event.extendedProps.description,
-            groups: info.event.extendedProps.groups,
-            uniform: info.event.extendedProps.uniform,
-            isRecurring: info.event.extendedProps.isRecurring,
-            coach: info.event.extendedProps.coach,
-        });*/
         setEventWindowOpen(true);
     }
 //it looks like it can be one function for deleting one event
@@ -61,19 +48,6 @@ const Events = () => {
             await eventsService.deleteEvent(selectedEvent.id);
 
             selectedEvent.remove();
-            // Refresh eventsForView
-            const calendarApi = calendarRef.current.getApi();
-            const view = calendarApi.view;
-            await fetchEvents(view.activeStart.toISOString().split('T')[0], view.activeEnd.toISOString().split('T')[0]);
-            setEventWindowOpen(false);
-            setSelectedEvent(null);
-            setSelectedEventPlain(null);
-        }
-    }
-//for deleting all recurring eventsForView
-    const handleDeleteAll = async () => {
-        if (window.confirm("Are you sure you want to delete all similar eventsForView?")&&selectedEvent) {
-            await recurringEventsService.deleteEvent(selectedEvent.extendedProps.eventId);
             // Refresh eventsForView
             const calendarApi = calendarRef.current.getApi();
             const view = calendarApi.view;
@@ -210,14 +184,15 @@ const Events = () => {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={handleScheduleUpdate}
-                        style={{marginBottom: '1rem'}}
+                        component={Link}
+                        to="/schedules"
+                        style={{ marginBottom: '1rem' }}
                     >
                         update schedule
                     </Button>
                 </div> : null}
             {user&&user.group?<Button variant="contained" color="primary" onClick={()=>setIsEventsFiltered(!isEventsFiltered)} style={{ marginBottom: '1rem' }}>
-                {!isEventsFiltered?'show my group eventsForView':'show all club eventsForView'}
+                {!isEventsFiltered?'show my group events':'show all events'}
             </Button>: null}
 
             {selectedEvent&&<Event event={selectedEventPlain}
