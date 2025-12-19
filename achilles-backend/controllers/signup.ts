@@ -14,6 +14,7 @@ router.post('/', async (req, res) => {
         lastName: lastName,
         password: passwordHash
     })
+    await newUser.setRoles([1])
     res.json(newUser);
 })
 
