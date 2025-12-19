@@ -142,21 +142,21 @@ router.delete("/:id", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
     const {id} = req.params;
-    const { recurringEndDate, timeZone} = req.body;
-    console.log('Received newEndDate:', timeZone);
+    const {newEndDate} = req.body;
     const schedule = await Schedule.findByPk(id)
 
     if (!schedule) {
         return res.status(404).end()
     } else {
         console.log('schedule.end:', schedule.end, typeof schedule.end);
-        console.log('newEndDate:', recurringEndDate, typeof recurringEndDate);
-        if (new Date(recurringEndDate) < schedule.end) {
+        console.log('requesr', req.body)
+        console.log('newEndDate:', newEndDate, typeof newEndDate);
+        if (new Date(newEndDate) < schedule.end) {
             const events = await Event.findAll({
                 where: {
                     scheduleId: id,
                     end: {
-                        [Op.gt]: new Date(recurringEndDate)
+                        [Op.gt]: new Date(newEndDate)
                     }
                 }
             })
@@ -164,11 +164,11 @@ router.put("/:id", async (req, res) => {
                 await event.setGroups([]);
                 await event.destroy();
             }
-        } else if (new Date(recurringEndDate) > schedule.end) {
+        } else if (new Date(newEndDate) > schedule.end) {
             //I need to create events however currently I don't have all the data needed to create events again
             return res.status(400).end()
         }
-            schedule.end = new Date(recurringEndDate);
+            schedule.end = new Date(newEndDate);
             const updatedSchedule = await schedule.save()
         await updatedSchedule.reload({
             include: [{
