@@ -27,8 +27,6 @@ class Schedule extends Model<InferAttributes<Schedule>, InferCreationAttributes<
     declare setGroupsForEvent: BelongsToManySetAssociationsMixin<Group, number>;
     declare getGroupsForEvent: () => Promise<Group[]>;
 
-
-//    declare createEventEntry: HasManyCreateAssociationMixin<Event,'eventId'>;
 }
 
 Schedule.init({

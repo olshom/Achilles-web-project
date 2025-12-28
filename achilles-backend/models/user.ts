@@ -1,7 +1,4 @@
-import {Model, DataTypes, HasManyCreateAssociationMixin, BelongsToManySetAssociationsMixin,
-    BelongsToManyGetAssociationsMixin,
-    BelongsToManyAddAssociationMixin,
-    BelongsToManyRemoveAssociationMixin} from 'sequelize';
+import {Model, DataTypes, HasManyCreateAssociationMixin, BelongsToManySetAssociationsMixin,} from 'sequelize';
 import {sequelize} from '../util/db';
 import {
     InferAttributes,
@@ -32,13 +29,9 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare profilePic: CreationOptional<string>;
     declare roles?: NonAttribute<Role[]>;
     declare achievements?: NonAttribute<Achievement[]>;
-//    declare addAchievement: HasManyAddAssociationMixin<Achievement, number>;
     declare createAchievement: HasManyCreateAssociationMixin<Achievement, 'userId'>;
 
     declare setRoles: BelongsToManySetAssociationsMixin<Role, number>;
-    declare removeRole: BelongsToManyRemoveAssociationMixin<Role, number>;
-    declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
-    declare addRole: BelongsToManyAddAssociationMixin<Role, number>;
 }
 
 User.init({

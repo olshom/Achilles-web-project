@@ -1,16 +1,9 @@
 import {useState} from 'react';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableRow,
-    Paper, Button,
+    TableCell, Button,
 } from '@mui/material'
 import dayjs from 'dayjs';
 import {DatePicker} from "@mui/x-date-pickers";
-import schedulesService from "../services/schedules.js";
-
 
 const ScheduleWDateUpdate = ({schedule, handleChangeEndDate}) => {
     const [datePickerIsOpen, setDatePickerIsOpen] = useState(false);
@@ -34,7 +27,7 @@ const ScheduleWDateUpdate = ({schedule, handleChangeEndDate}) => {
                     (<>
                         <Button variant="contained"
                                 onClick={() => {
-                                    handleChangeEndDate(schedule.id, schedule.end, {recurringEndDate, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone});
+                                    handleChangeEndDate(schedule.id, schedule.end, recurringEndDate);
                                     setDatePickerIsOpen(false)
                                 }}>
                             Update</Button>

@@ -197,7 +197,6 @@ const Achievement = () => {
                     </TableCell>
                     <TableCell>
                         {editEnabled && (
-                            <div>
                                 <Button
                                     color="secondary"
                                     variant="outlined"
@@ -211,7 +210,6 @@ const Achievement = () => {
                                 >
                                     Cancel
                                 </Button>
-                            </div>
                         )}
                     </TableCell>
                 </TableRow>)}

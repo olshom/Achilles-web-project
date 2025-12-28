@@ -95,16 +95,6 @@ const EventForm = ({initValues, isEvent, onEventCreated, onCancel}) => {
                     required
                     style={{ marginBottom: '1rem' }}
                 />
-{/*                <FormControl fullWidth style={{ marginBottom: '1rem' }}>
-                    <InputLabel>Event Type</InputLabel>
-                    <Select
-                        value={eventType}
-                        onChange={(e) => setEventType(e.target.value)}
-                    >
-                        <MenuItem value="one-time">One-Time Event</MenuItem>
-                        <MenuItem value="recurring">Recurring Event</MenuItem>
-                    </Select>
-                </FormControl>*/}
                 <FormControl fullWidth style={{ marginBottom: '1rem' }}>
                     <InputLabel>Coach</InputLabel>
                     <Select

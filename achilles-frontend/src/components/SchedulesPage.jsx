@@ -16,7 +16,6 @@ const SchedulesPage = () => {
     const [notStartedSchedules, setNotStartedSchedules] = useState([]);
     const [activeSchedules, setActiveSchedules] = useState([]);
     const [endedSchedules, setEndedSchedules] = useState([]);
-
     const [formIsVisible, setFormIsVisible] = useState(false);
 
     useEffect( () => {
@@ -32,15 +31,14 @@ const SchedulesPage = () => {
     }
 
     const handleChangeEndDate = async(scheduleId, oldEndDate, newEndDate) => {
+        console.log('newEndDate', newEndDate.recurringEndDate, 'type', typeof newEndDate.recurringEndDate);
+        console.log('oldEndDate', oldEndDate , 'type', typeof oldEndDate);
         if (new Date(newEndDate) >= new Date(oldEndDate)) {
             alert('Unfortunately, it is not possible to change the end date to a future date at the moment. Please create a new schedule instead.');
             return;
         }
-        const updatedSchedule = await schedulesService.updateSchedule(scheduleId, newEndDate);
-        console.log('I want to see response', updatedSchedule);
-
+        const updatedSchedule = await schedulesService.updateSchedule(scheduleId, {newEndDate});
         setActiveSchedules(activeSchedules.map(schedule => schedule.id !== updatedSchedule.id ? schedule : updatedSchedule));
-
     }
 
     const handleDeleteSchedule = async (scheduleId) => {
@@ -48,9 +46,6 @@ const SchedulesPage = () => {
             await schedulesService.deleteSchedule(scheduleId);
         setNotStartedSchedules(notStartedSchedules.filter(schedule => schedule.id !== scheduleId));
     }
-
-    const buttonChange = <Button variant="contained" onClick={() => handleChangeEndDate(scheduleId, recurringEndDate)}>
-        Update</Button>
 
 
     return (

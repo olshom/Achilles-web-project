@@ -38,20 +38,4 @@ export const deleteEventAction = (id) => {
     }
 }
 
-/*export const addEventAction = (event) => {
-    return async (dispatch) => {
-        const newEvent = await eventsService.addEvent(event);
-
-        dispatch(appendEvent(newEvent));
-    }
-}
-
-
-
-export const updateEventAction = (event) => {
-    return async (dispatch) => {
-        const updatedEvent = await eventsService.updateEvent(event.id, event);
-        dispatch(updateEvent(updatedEvent));
-    }
-}*/
 export default eventsSlice.reducer;

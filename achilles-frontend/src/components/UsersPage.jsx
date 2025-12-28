@@ -5,5 +5,4 @@ const UsersPage = () => {
         <Users role='member' url={'members'}/>
     )
 }
-
 export default UsersPage;

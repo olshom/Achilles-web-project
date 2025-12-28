@@ -19,9 +19,8 @@ const Signup = () => {
             setFirstName('');
             setLastName('');
             setPassword('');
-            navigate('/')
+            navigate('/login')
         } catch (error) {}
-
     }
     return (
         <div>

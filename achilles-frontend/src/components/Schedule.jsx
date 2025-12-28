@@ -1,23 +1,10 @@
 
 import {
-    TableCell,
-    Paper, Button,
+    TableCell, Button,
 } from '@mui/material'
 import dayjs from 'dayjs';
-import schedulesService from "../services/schedules.js";
-
 
 const Schedule = ({schedule, handleDeleteSchedule}) => {
-/*    const handleDelete = async(scheduleId) => {
-        if(window.confirm("Are you sure you want to delete this schedule?"))
-        {
-            await schedulesService.deleteSchedule(scheduleId);
-        }
-
-//        window.location.reload();
-    }*/
-
-
     return (
         <>
             <TableCell>{dayjs(schedule.start).format('MMMM D, YYYY')} - {dayjs(schedule.end).format('MMMM D, YYYY')}</TableCell>

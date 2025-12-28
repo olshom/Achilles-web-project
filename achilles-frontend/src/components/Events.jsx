@@ -1,7 +1,7 @@
 import {Button} from "@mui/material";
 import EventForm from "./EventForm.jsx";
-import {useEffect, useRef, useState} from "react";
-import {useSelector, useDispatch} from "react-redux";
+import {useRef, useState} from "react";
+import {useSelector} from "react-redux";
 import {Link} from "react-router-dom";
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -28,21 +28,12 @@ const Events = () => {
 
     const openEventFunctions = async(info) => {
         info.jsEvent.preventDefault();
-        //open modal with 3 options delete, edit, delete all
-        console.log('click is working',  (info.event.id));
-        //I use this FC obj only for deleting
-
-        //mb I can take from init eventsForView
-        console.log('co see info ovject', info.event);
-        console.log('to check init events', events);
-        console.log('TO SEE ID', events.find(event => event.id === Number(info.event.id)));
         const eventPlainObj = events.find(event => event.id === Number(info.event.id));
         setSelectedEvent(info.event);
         setSelectedEventPlain(eventPlainObj);
-        console.log('selectedEventPlain', eventPlainObj);
         setEventWindowOpen(true);
     }
-//it looks like it can be one function for deleting one event
+
     const handleDelete = async () => {
         if (window.confirm("Are you sure you want to delete this event?")&&selectedEvent) {
             await eventsService.deleteEvent(selectedEvent.id);
@@ -77,11 +68,6 @@ const Events = () => {
         setIsEvent(true);
     }
 
-    const handleScheduleUpdate = () => {
-        //navigate to schedule management page
-        alert('to be implemented');
-    }
-
     const handleCancelForm = async () => {
         setIsEvent(false);
         setFormIsVisible(false);
@@ -90,14 +76,9 @@ const Events = () => {
     }
 
     const fetchEvents = async (start, end) => {
-/*        console.log('fetchEvents')*/
         try {
             let events = await eventsService.getAllEvents(start, end);
             setEvents(events);
-            // mb I need to put init eventsForView into store for evetn usage, to find original obj for specific event
-            //colored eventsForView use only for displaying
-            console.log("eventsForView in initial state", events);
-            console.log("I want to see users fields", user);
             const coloredEvents = events.map(event => ({
                 id: event.id,
                 title: event.title,
@@ -113,7 +94,6 @@ const Events = () => {
                 },
                 display: "block"
             }));
-            console.log("eventsForView after altering for full calendar", coloredEvents);
             setEventsForView(coloredEvents);
         } catch (err) {
             console.log(err);
@@ -201,32 +181,10 @@ const Events = () => {
                                    handleDelete={handleDelete}
                                    handleUpdateOneEvent={handleUpdateEvent}
             />}
-            {/*<Dialog
-                open={eventWindowOpen}
-                onClose={() => setEventWindowOpen(false)}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">
-                    {selectedEvent.title}
-                </DialogTitle>
-                <DialogContent>
-                    <p>{selectedEvent.extendedProps.description}</p>
-                    <p><b>Groups:</b> {selectedEvent.extendedProps.groups}</p>
-                    <p><b>Uniform:</b> {selectedEvent.extendedProps.uniform}</p>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Delete</Button>
-                    <Button onClick={handleClose} autoFocus>
-                        Update
-                    </Button>
-                </DialogActions>
-            </Dialog>*/}
 
             {formIsVisible && <EventForm initValues={initialValueForEventForm}
                                          isEvent={isEvent}
                                          onEventCreated={handleEventCreated}
-                                         //onScheduleCreated={handleScheduleCreated}
                                          onCancel={handleCancelForm}/>}
             <FullCalendar
                 plugins={[ dayGridPlugin, timeGridPlugin, interactionPlugin ]}
@@ -235,7 +193,7 @@ const Events = () => {
                 headerToolbar={{
                     start: 'prev,next today',
                     center: 'title',
-                    end: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    end: 'dayGridMonth,timeGridDay'
                 }}
                 events={!isEventsFiltered?eventsForView:eventsForView.filter(event => event.extendedProps.groups.includes(user.group.name))}
                 eventClick={openEventFunctions}

@@ -3,7 +3,6 @@ import {Paper, Table, TableBody, TableCell, TableContainer, TableRow} from "@mui
 import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {addAchievementAction, initializeAchievements} from "../reducers/achievementsReducer.js";
-import {setUser} from "../reducers/userReducer.js";
 import {
     TextField,
     Button,

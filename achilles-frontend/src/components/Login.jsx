@@ -2,7 +2,7 @@ import { TextField, Button } from '@mui/material';
 import {Link, useNavigate} from 'react-router-dom';
 import {useState, useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {loginAction, setUser} from "../reducers/userReducer.js";
+import {loginAction} from "../reducers/userReducer.js";
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -27,7 +27,6 @@ const Login = () => {
             setUsername('');
             setPassword('');
         } catch (error) {
-//            dispatch(setErrorNotificationWTimer(`${error.response.data.error}`, 5));
             setUsername('');
             setPassword('');
         }
