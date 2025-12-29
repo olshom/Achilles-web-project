@@ -11,6 +11,7 @@
     "emitDecoratorMetadata": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "outDir": "build"
   }
 }
