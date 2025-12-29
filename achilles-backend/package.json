@@ -7,6 +7,7 @@
     "dev": "ts-node-dev index.ts",
     "migration:down": "ts-node util/rollback.ts",
     "start": "node build/index.ts",
+    "prettier": "prettier --write .",
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
