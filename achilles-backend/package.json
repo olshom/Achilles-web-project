@@ -8,7 +8,7 @@
     "migration:down": "ts-node util/rollback.ts",
     "build:ui": "rm -rf dist && cd ../achilles-frontend && npm run build && cp -r dist ../achilles-backend",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
-    "start": "node index.ts",
+    "start": "ts-node index.ts",
     "prettier": "prettier --write .",
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
