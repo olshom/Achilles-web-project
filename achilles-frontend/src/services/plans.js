@@ -1,5 +1,5 @@
 import axios from "./index.js";
-const baseURL = "http://localhost:3003/api/plans/";
+const baseURL = "/api/plans/";
 
 const getAllPlans = async () => {
   const response = await axios.get(baseURL);

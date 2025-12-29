@@ -1,5 +1,5 @@
 import axios from "./index.js";
-const baseURL = `http://localhost:3003/api/achievements/`;
+const baseURL = `/api/achievements/`;
 
 const getAllAchievements = async () => {
   const res = await axios.get(baseURL);

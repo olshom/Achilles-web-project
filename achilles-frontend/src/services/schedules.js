@@ -1,5 +1,5 @@
 import axios from "./index.js";
-const baseURL = "http://localhost:3003/api/schedules/";
+const baseURL = "/api/schedules/";
 
 const getAll = async () => {
   const response = await axios.get(baseURL);

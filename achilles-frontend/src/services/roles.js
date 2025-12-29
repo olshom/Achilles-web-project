@@ -1,5 +1,5 @@
 import axios from "./index.js";
-const baseURL = "http://localhost:3003/api/roles/";
+const baseURL = "/api/roles/";
 
 const getAllRoles = async () => {
   const response = await axios.get(baseURL);

@@ -1,5 +1,5 @@
 import axios from "./index.js";
-const baseUrl = "http://localhost:3003/api/users/";
+const baseUrl = "/api/users/";
 
 const getAllUsers = async () => {
   const response = await axios.get(baseUrl);

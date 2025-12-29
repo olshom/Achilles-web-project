@@ -1,6 +1,6 @@
 import axios from "./index.js";
-const baseURL = "http://localhost:3003/api/events/";
-const baseURL2 = "http://localhost:3003/api/schedules/";
+const baseURL = "/api/events/";
+const baseURL2 = "/api/schedules/";
 
 const getAllEvents = async (start, end) => {
   const res = await axios.get(baseURL, {

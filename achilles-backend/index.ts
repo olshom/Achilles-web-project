@@ -27,6 +27,7 @@ app.use("/api/achievements", achievementsRouter);
 app.use("/api/roles", rolesRouter);
 app.use("/api/groups", groupsRouter);
 app.use("/api/plans", plansRouter);
+app.use(express.static("dist"));
 
 const port = config.PORT;
 
