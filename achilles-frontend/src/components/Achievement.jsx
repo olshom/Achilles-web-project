@@ -50,9 +50,9 @@ const Achievement = () => {
       }
 
       console.log("path", rolePath);
-      setType(achievement.type);
-      setDescription(achievement.description);
-      setDate(dayjs(achievement.date));
+      setType(achievementFromBackEnd.type);
+      setDescription(achievementFromBackEnd.description);
+      setDate(dayjs(achievementFromBackEnd.date));
     } catch (error) {
       console.log(error);
     }
@@ -80,6 +80,8 @@ const Achievement = () => {
   if (!achievement || !user) {
     return "Loading...";
   }
+
+  console.log('type', type)
   return (
     <TableContainer component={Paper}>
       <Table>
