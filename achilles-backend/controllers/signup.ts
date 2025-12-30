@@ -5,7 +5,6 @@ import User from "../models/user";
 
 router.post("/", async (req, res) => {
   const { username, firstName, lastName, password } = req.body;
-  console.log(firstName, lastName, password);
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(password, saltRounds);
   const newUser = await User.create({

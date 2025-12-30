@@ -104,7 +104,6 @@ const EventForm = ({ initValues, isEvent, onEventCreated, onCancel }) => {
           name="title"
           value={title}
           onChange={(e) => {
-            console.log("e target", e.target);
             setTitle(e.target.value);
           }}
           fullWidth

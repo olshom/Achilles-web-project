@@ -25,7 +25,6 @@ function App() {
   const [loggedUser, setLoggedUser] = useState();
   useEffect(() => {
     if (!user) {
-      console.log("App effect running");
       const loggedUserJSON = window.localStorage.getItem("loggedUser");
       if (loggedUserJSON) {
         const user = JSON.parse(loggedUserJSON);

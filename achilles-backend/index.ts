@@ -15,7 +15,6 @@ import schedulesRouter from "./controllers/schedules";
 import { config } from "./util/config";
 
 app.get("/ping", (_req, res) => {
-  console.log("someone pinged here");
   res.send("pong");
 });
 app.use("/api/users", usersRouter);

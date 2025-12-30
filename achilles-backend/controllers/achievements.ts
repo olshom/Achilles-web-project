@@ -23,7 +23,6 @@ router.get("/", async (_req, res) => {
 });
 
 router.post("/", userExtractor, isAdmin, async (req, res) => {
-  console.log("I want to see req", req);
   const { userId, type, description, date } = req.body;
   const user = await User.findByPk(userId);
   if (!user) {

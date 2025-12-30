@@ -27,7 +27,6 @@ import {
 
 const User = () => {
   const id = useParams().id;
-  console.log(id);
   const [userForView, setUserForView] = useState(null);
   const [editEnabled, setEditEnabled] = useState(false);
   const [username, setUsername] = useState("");
@@ -54,11 +53,10 @@ const User = () => {
       setUsername(user.username);
       setFirstName(user.firstName);
       setLastName(user.lastName);
-      setGroupId(user.group?.id ?? "");
+      setGroupId(user.group?.id ?? null);
       setBelt(user.belt ?? "");
       setUserRoles(user.roles?.map((role) => role.id));
-      setPlanId(user.plan?.id ?? "");
-      console.log("first", userRoles);
+      setPlanId(user.plan?.id ?? null);
     } catch (error) {
       console.log(error);
     }
@@ -208,9 +206,7 @@ const User = () => {
                     multiple
                     value={userRoles}
                     onChange={(e) => {
-                      console.log("e.target.value  ", e.target.value);
                       setUserRoles(e.target.value);
-                      console.log("userRoles  ", userRoles);
                     }}
                   >
                     {roles.map((role) => (

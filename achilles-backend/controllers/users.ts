@@ -67,7 +67,6 @@ router.get("/:id", async (req, res) => {
       },
     ],
   });
-  console.log("associations", User.associations);
 
   if (!user) {
     res.status(404).json({ error: "User not found" });

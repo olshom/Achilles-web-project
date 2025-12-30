@@ -42,13 +42,6 @@ const SchedulesPage = () => {
   };
 
   const handleChangeEndDate = async (scheduleId, oldEndDate, newEndDate) => {
-    console.log(
-      "newEndDate",
-      newEndDate.recurringEndDate,
-      "type",
-      typeof newEndDate.recurringEndDate,
-    );
-    console.log("oldEndDate", oldEndDate, "type", typeof oldEndDate);
     if (new Date(newEndDate) >= new Date(oldEndDate)) {
       alert(
         "Unfortunately, it is not possible to change the end date to a future date at the moment. Please create a new schedule instead.",

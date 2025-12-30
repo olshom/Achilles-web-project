@@ -31,13 +31,11 @@ const createEventsForSchedule = async (
   selectedGroups: number[],
 ) => {
   const endDate = new Date(recurringEndDate);
-  console.log("selectedGroups in createEventsForSchedule:", selectedGroups);
   const recurringStartDateNumber = new Date(recurringStartDate).getDay();
   let diff = 0;
   let atLeastOne = false;
 
   for (let day of recurringDays) {
-    console.log("Processing day:", day);
     if (day >= recurringStartDateNumber) {
       diff = day - recurringStartDateNumber;
     } else {
@@ -46,7 +44,6 @@ const createEventsForSchedule = async (
     const eventDate = new Date(recurringStartDate);
     eventDate.setDate(eventDate.getDate() + diff);
     while (eventDate <= endDate) {
-      console.log("ScheduleWDateUpdate date:", eventDate);
       const startT = buildDateFromParts(
         eventDate.toISOString(),
         startTime,
@@ -56,16 +53,6 @@ const createEventsForSchedule = async (
         eventDate.toISOString(),
         endTime,
         timeZone,
-      );
-      console.log(
-        "ScheduleWDateUpdate new event:",
-        title,
-        scheduleId,
-        uniform,
-        startT,
-        endT,
-        coach,
-        description,
       );
       const newEvent = await Event.create({
         title,
@@ -99,7 +86,6 @@ router.post("/", userExtractor, isAdmin, async (req, res) => {
     coach,
     description,
   } = req.body;
-  console.log("Received recurringDays:", req.body);
 
   const newSchedule = await Schedule.create({
     monday: recurringDays.includes(1),
@@ -177,9 +163,6 @@ router.put("/:id", async (req, res) => {
   if (!schedule) {
     return res.status(404).end();
   } else {
-    console.log("schedule.end:", schedule.end, typeof schedule.end);
-    console.log("requesr", req.body);
-    console.log("newEndDate:", newEndDate, typeof newEndDate);
     if (new Date(newEndDate) < schedule.end) {
       const events = await Event.findAll({
         where: {

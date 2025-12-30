@@ -24,7 +24,6 @@ const Events = () => {
 
   const calendarRef = useRef(null);
   const user = useSelector((state) => state.user);
-  console.log("user", user);
 
   const openEventFunctions = async (info) => {
     info.jsEvent.preventDefault();

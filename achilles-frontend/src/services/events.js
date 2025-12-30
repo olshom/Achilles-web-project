@@ -11,11 +11,9 @@ const getAllEvents = async (start, end) => {
 
 const postEvent = async (event) => {
   if (event.recurringDays) {
-    console.log("But I am here");
     const response = await axios.post(baseURL2, event);
     return response.data;
   } else {
-    console.log("Ineed to post single event");
     const response = await axios.post(baseURL, event);
 
     return response.data;

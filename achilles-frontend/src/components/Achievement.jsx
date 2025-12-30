@@ -37,7 +37,6 @@ const Achievement = () => {
       const achievementFromBackEnd =
         await achievementService.getAchievementById(id);
       setAchievement(achievementFromBackEnd);
-      console.log("achievement", achievementFromBackEnd);
       if (
         achievementFromBackEnd.user.roles.map((r) => r.name).includes("coach")
       ) {
@@ -49,7 +48,6 @@ const Achievement = () => {
         setRolePath("members");
       }
 
-      console.log("path", rolePath);
       setType(achievementFromBackEnd.type);
       setDescription(achievementFromBackEnd.description);
       setDate(dayjs(achievementFromBackEnd.date));
@@ -67,7 +65,6 @@ const Achievement = () => {
   const readableDate = date ? dayjs(date).format("MMMM D, YYYY") : null;
 
   const handleDelete = async (id) => {
-    console.log("achievement", achievement);
     try {
       if (window.confirm("Are you sure you want to delete this achievement?")) {
         await dispatch(deleteAchievementAction(id));
@@ -81,7 +78,6 @@ const Achievement = () => {
     return "Loading...";
   }
 
-  console.log('type', type)
   return (
     <TableContainer component={Paper}>
       <Table>

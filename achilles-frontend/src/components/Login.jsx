@@ -14,7 +14,6 @@ const Login = () => {
   const user = useSelector((state) => state.user);
 
   useEffect(() => {
-    console.log("User changed:", user);
     if (user) navigate("/events");
   }, []);
 
@@ -22,7 +21,6 @@ const Login = () => {
     event.preventDefault();
     try {
       await dispatch(loginAction(username, password));
-      console.log(username);
       navigate("/events");
       setUsername("");
       setPassword("");
