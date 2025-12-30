@@ -5,7 +5,9 @@ This app was created for a specific Brazilian jiu-jitsu club and meets the clubâ
 
 There are three different user roles, each with its own functionality: admin, coach, and member. The admin can manage the training schedule and member information. Logged-in users can view all club members and their achievements and filter the schedule by their group. A coach can be assigned to conduct a specific class (event) or a training session (schedule).
 To check admin functionality, log in with credentials: username admin@mail.com, password: password.
+To check ordinary member functionality, log in with credentials: username user@mail.com , password: password.
 
 Time log: [documentation/timelog.md](https://github.com/olshom/Achilles-web-project/blob/main/documentation/timelog.md)
 
 Database diagram: [documentation/db-diagram.png](https://github.com/olshom/Achilles-web-project/blob/main/documentation/db-diagram.png)
+
