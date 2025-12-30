@@ -25,7 +25,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare password: string;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
-  declare groupId: ForeignKey<Group["id"]>;
+  declare groupId: ForeignKey<Group["id"]> | null;
   declare group?: NonAttribute<Group>;
   declare belt: CreationOptional<string>;
   declare planId: ForeignKey<Plan["id"]> | null;
